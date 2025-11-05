@@ -11,4 +11,6 @@ add_executable(penguins_the_game main.c
         placementPhase.c
         placementPhase.h
         movementPhase.c
-        movementPhase.h)
+        movementPhase.h
+        iceFloe.h
+        gameBoard.h)
