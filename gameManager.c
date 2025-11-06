@@ -9,8 +9,8 @@
 void GameManager_Init(GameManager *gm) {
     gm->numOfPlayers = 2; // Currently fixed to 2 players
     gm->isRunning = true;
-    int boardWidth = 8 + rand() % 4;
-    int boardHeight = 8 + rand() % 4;
+    const int boardWidth = 8 + rand() % 4;
+    const int boardHeight = 8 + rand() % 4;
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     //TO-DO Init players and needed data
@@ -33,5 +33,6 @@ void GameManager_Run(GameManager *gm) {
 }
 
 void GameManager_Cleanup(GameManager *gm) {
+    GameBoard_Cleanup(&gm->gb);
     printf("Game cleaned up!\n");
 }

@@ -56,3 +56,11 @@ void GameBoard_Print(const GameBoard *gb) {
         printf("\n");
     }
 }
+
+void GameBoard_Cleanup(GameBoard *gb) {
+    for (int i = 0; i < gb->boardHeight; i++) {
+        free(gb->floeGrid[i]);
+    }
+    free(gb->floeGrid);
+    gb->floeGrid = nullptr;
+}
