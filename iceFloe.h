@@ -4,7 +4,6 @@
 typedef struct {
     bool isFloating;
     int fishCount;
-    bool isOccupied;
     int occupantId;
 } IceFloe;
 

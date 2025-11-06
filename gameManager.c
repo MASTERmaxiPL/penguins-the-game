@@ -4,11 +4,19 @@
 #include "movementPhase.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void GameManager_Init(GameManager *gm) {
-    gm->isRunning = 1;
-    // Init players, board and needed data
+    gm->numOfPlayers = 2; // Currently fixed to 2 players
+    gm->isRunning = true;
+    int boardWidth = 8 + rand() % 4;
+    int boardHeight = 8 + rand() % 4;
+    GameBoard_Init(&gm->gb, boardWidth, boardHeight);
+
+    //TO-DO Init players and needed data
     printf("Game initialized!\n");
+
+    GameBoard_Print(&gm->gb);
 }
 
 void GameManager_Run(GameManager *gm) {
@@ -20,7 +28,7 @@ void GameManager_Run(GameManager *gm) {
         * if (something)
         *    gm->isRunning = 0;
         */
-        gm->isRunning=0;
+        gm->isRunning=false;
     }
 }
 
