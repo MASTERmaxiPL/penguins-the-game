@@ -16,7 +16,7 @@ void GameManager_Init(GameManager *gm) {
     //TO-DO Init players and needed data
     printf("Game initialized!\n");
 
-    GameBoard_Print(&gm->gb);
+    GameBoard_Print(&gm->gb); // one more test
 }
 
 void GameManager_Run(GameManager *gm) {
