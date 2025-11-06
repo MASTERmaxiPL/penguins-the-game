@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define IS_FLOATING_PROBABILITY 85
+#define IS_FLOATING_PROBABILITY 75
 #define MAX_FISH_COUNT 3
 
 
@@ -48,12 +48,12 @@ void GameBoard_Print(const GameBoard *gb) {
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
             if (floe->isFloating) {
-                printf("%d ", floe->fishCount);
+                printf("| %d ", floe->fishCount);
             } else {
-                printf("X  ");
+                printf("| X ");
             }
         }
-        printf("\n");
+        printf("| \n");
     }
 }
 
