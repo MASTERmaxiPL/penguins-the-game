@@ -10,7 +10,7 @@
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
-    gb->floeGrid = nullptr;
+    gb->floeGrid = NULL; // gb->floeGrid = nullptr;
 
     gb->floeGrid = malloc(boardHeight * sizeof(IceFloe *));
     for (int i = 0; i < boardHeight; i++) {
