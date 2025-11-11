@@ -11,16 +11,16 @@ bool Can_Player_Place(Player *p) {
 
 void Player_Place(GameBoard *gb, Player *p, int x, int y) {
     IceFloe *floe = &gb->floeGrid[x][y];
-    if (p->remainingPenguins <= 0) {
-        printf("Current Player %c has no penguins.\n", p->symbol);
+    if (x > gb->boardHeight || y > gb->boardWidth || x < 0 || y < 0) {
+        printf("your coordinates are out of bounds!\n ");
         return;
     }
-    if (!floe->isFloating) { //check if there is icefloe
-        printf("You cannot put your penguin here due to lack of icefloe. (%d,%d)!\n", x, y);
+    if (!floe->isFloating) { //check if there is ice floe
+        printf("You cannot put your penguin here due to lack of ice floe. (%d,%d)!\n", x, y);
         return;
     }
     if (floe->occupantId != -1) { //check if occupied
-        printf("You cannot put your penguin here due to occupied icefloe. (%d,%d)!\n", x, y);
+        printf("You cannot put your penguin here due to occupied ice floe. (%d,%d)!\n", x, y);
         return;
     }
     floe->occupantId = p->symbol; //place penguin

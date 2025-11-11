@@ -15,7 +15,7 @@ int main() {
         printf("Game finished, cleaning...\n");
         GameManager_Cleanup(&game);
 
-        printf("Do you want to play again?( print 'y' to continue, else program finishes))\n");
+        printf("Do you want to play again? (print 'y' to continue, else program finishes)\n");
         scanf(" %c", &input);
         if (input != 'y' && input != 'Y')
             session_active = false;
