@@ -16,17 +16,17 @@ void Player_Place(GameBoard *gb, Player *p, int x, int y) {
         return;
     }
     if (!floe->isFloating) { //check if there is ice floe
-        printf("You cannot put your penguin here due to lack of ice floe. (%d,%d)!\n", x, y);
+        printf("You cannot put your penguin here due to lack of ice floe. (%d,%d)!\n", y, x);
         return;
     }
     if (floe->occupantId != -1) { //check if occupied
-        printf("You cannot put your penguin here due to occupied ice floe. (%d,%d)!\n", x, y);
+        printf("You cannot put your penguin here due to occupied ice floe. (%d,%d)!\n", y, x);
         return;
     }
     floe->occupantId = p->symbol; //place penguin
     p->remainingPenguins--; // one less penguin
     p->FishSum += floe->fishCount; // +Fish
-    printf("%c: Current Player put his penguin on (%d,%d) and obtained %d fish. Now has %d fish. Penguins left: %d\n", p->symbol, x, y, floe->fishCount,p->FishSum, p->remainingPenguins);
+    printf("%c: Current Player put his penguin on (%d,%d) and obtained %d fish. Now has %d fish. Penguins left: %d\n", p->symbol, y, x, floe->fishCount,p->FishSum, p->remainingPenguins);
 
 
 
@@ -41,10 +41,10 @@ void PlacementPhase_Run(GameManager *gm) {
             int x;
             int y;
             GameBoard_Print(gm);
-            printf("Player %c, put your x coordinate: \n", currentPlayer->symbol);
-            scanf("%d", &x);
-            printf("Player %c, put your y coordinate: \n", currentPlayer->symbol);
-            scanf("%d", &y);
+            printf("Player %c, put your x y coordinates: \n", currentPlayer->symbol);
+            scanf("%d %d", &x, &y);
+            //printf("Player %c, put your y coordinate: \n", currentPlayer->symbol);
+            //scanf("%d", &y);
             Player_Place(&gm->gb, currentPlayer, y, x);
         }
         gm->turn = 1 - gm->turn;
