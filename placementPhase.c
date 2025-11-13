@@ -27,9 +27,6 @@ void Player_Place(GameBoard *gb, Player *p, int x, int y) {
     p->remainingPenguins--; // one less penguin
     p->FishSum += floe->fishCount; // +Fish
     printf("%c: Current Player put his penguin on (%d,%d) and obtained %d fish. Now has %d fish. Penguins left: %d\n", p->symbol, y, x, floe->fishCount,p->FishSum, p->remainingPenguins);
-
-
-
 }
 
 void PlacementPhase_Run(GameManager *gm) {
