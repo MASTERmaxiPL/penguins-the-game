@@ -1,8 +1,8 @@
 #include "placementPhase.h"
 #include "boardGenerator.h"
 #include "player.h"
-#include <stdio.h>
 
+#include <stdio.h>
 
 
 bool Can_Player_Place(Player *p) {
@@ -54,12 +54,3 @@ void PlacementPhase_Run(GameManager *gm) {
     printf("Player %c has %d fish after placement phase.\n", gm->players[0].symbol, gm->players[0].FishSum);
     printf("Player %c has %d fish after placement phase.\n", gm->players[1].symbol, gm->players[1].FishSum);
 }
-
-
-
-
-
-
-
-
-
