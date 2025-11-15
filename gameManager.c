@@ -12,11 +12,11 @@ void GameManager_Init(GameManager *gm) {
     gm->turn = 0;
     // placement phase player 0
     gm->players[0].symbol = 'A';
-    gm->players[0].FishSum = 0;
+    gm->players[0].sumOfFish = 0;
     gm->players[0].remainingPenguins = 2; // value can be changed at any time
     // player 1
     gm->players[1].symbol = 'B';
-    gm->players[1].FishSum = 0;
+    gm->players[1].sumOfFish = 0;
     gm->players[1].remainingPenguins = 2; // value can be changed at any time
 
     const int boardWidth = 8 + rand() % 4;

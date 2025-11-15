@@ -7,8 +7,8 @@
 
 
 void PlacementPhase_Run(GameManager *gm);
-bool Can_Player_Place(Player *p);
-void Player_Place(GameBoard *gb, Player *p, IceFloe *floe, int x, int y);
+bool Can_Player_Place(const Player *p);
+void Player_Place(Player *p, IceFloe *floe, int x, int y);
 
 
 #endif

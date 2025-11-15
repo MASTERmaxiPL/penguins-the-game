@@ -3,7 +3,7 @@
 
 typedef struct {
     char symbol;
-    int FishSum;
+    int sumOfFish;
     int remainingPenguins;
 } Player;
 
