@@ -10,7 +10,7 @@
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
-    gb->floeGrid = NULL; // gb->floeGrid = nullptr;
+    gb->floeGrid = nullptr;
 
     gb->floeGrid = malloc(boardHeight * sizeof(IceFloe *));
     for (int i = 0; i < boardHeight; i++) {
@@ -47,17 +47,18 @@ void GameBoard_Print(const GameBoard *gb) {
     for (int y = 0; y < gb->boardHeight; y++) {
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
+
             if (floe->occupantId != -1) // if occupied
             {
-                printf("| %c ", floe->occupantId);
+                printf("| P%d ", floe->occupantId + 1);
             }
             else if (floe->isFloating) //if not occupied, if ice floe
             {
-                printf("| %d ", floe->fishCount);
+                printf("| %d  ", floe->fishCount);
             }
             else // no ice floe
             {
-                printf("| X ");
+                printf("| X  ");
             }
         }
         printf("| \n");

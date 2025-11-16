@@ -3,12 +3,11 @@
 
 #include "gameBoard.h"
 #include "gameManager.h"
-#include "player.h"
 
 
-void PlacementPhase_Run(GameManager *gm);
-bool Can_Player_Place(const Player *p);
-void Player_Place(Player *p, IceFloe *floe, int x, int y);
+void PlacementPhase_Run(const GameManager *gm);
+void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y);
+void Player_Placement_Turn(const GameManager *gm, int currentPlayerIndex);
 
 
 #endif

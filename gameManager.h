@@ -2,14 +2,13 @@
 #define GAME_MANAGER_H
 
 #include "gameBoard.h"
-#include "player.h"
 
 typedef struct {
     GameBoard gb;
-    Player players[2];
     int numOfPlayers;
+    int *players;
+    int penguinsPerPlayer;
     bool isRunning;
-    int turn;
 } GameManager;
 
 void GameManager_Init(GameManager *gm);
