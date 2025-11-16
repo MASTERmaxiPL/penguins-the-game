@@ -47,10 +47,18 @@ void GameBoard_Print(const GameBoard *gb) {
     for (int y = 0; y < gb->boardHeight; y++) {
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
-            if (floe->isFloating) {
-                printf("| %d ", floe->fishCount);
-            } else {
-                printf("| X ");
+
+            if (floe->occupantId != -1) // if occupied
+            {
+                printf("| P%d ", floe->occupantId + 1);
+            }
+            else if (floe->isFloating) //if not occupied, if ice floe
+            {
+                printf("| %d  ", floe->fishCount);
+            }
+            else // no ice floe
+            {
+                printf("| X  ");
             }
         }
         printf("| \n");
