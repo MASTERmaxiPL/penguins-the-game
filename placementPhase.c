@@ -16,7 +16,7 @@ void PlacementPhase_Run(GameManager *gm) {
     printf("Placement Phase finished successfully!\n");
     GameBoard_Print(&gm->gb);
     for ( int i = 0; i < gm->numOfPlayers; i++){
-        printf("Player %d has %d fish after placement phase.\n", i+1, gm->players[i]);
+        printf("Player %d has %d fish after placement phase.\n", i+1, gm->playersScore[i]);
     }
 }
 
@@ -41,7 +41,7 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
         if (floe->isFloating && floe->occupantId == -1) {
-            Player_Place(currentPlayerIndex, gm->players, floe, x, y);
+            Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
             break;
         }
         printf("You cannot place your penguin here. Try again! (%d,%d)!\n", x, y);

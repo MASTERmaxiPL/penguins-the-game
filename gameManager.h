@@ -6,7 +6,7 @@
 typedef struct {
     GameBoard gb;
     int numOfPlayers;
-    int *players;
+    int *playersScore;
     int penguinsPerPlayer;
     bool isRunning;
 } GameManager;

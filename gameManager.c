@@ -8,7 +8,7 @@
 void GameManager_Init(GameManager *gm) {
     gm->numOfPlayers = 2; // Currently fixed to 2 players
     gm->penguinsPerPlayer = 8; // Currently fixed to 8 penguins per player
-    gm->players = calloc(gm->numOfPlayers, sizeof(int));
+    gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
 
     const int boardWidth = 8 + rand() % 4;
