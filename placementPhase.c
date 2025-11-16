@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void PlacementPhase_Run(const GameManager *gm) {
+void PlacementPhase_Run(GameManager *gm) {
     printf("Placement Phase\n");
     for ( int turn = 1; turn < gm->penguinsPerPlayer-1; turn++) {
         printf("Turn %d\n", turn);
@@ -20,7 +20,7 @@ void PlacementPhase_Run(const GameManager *gm) {
     }
 }
 
-void Player_Placement_Turn(const GameManager *gm, const int currentPlayerIndex)
+void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 {
     int x, y;
 
