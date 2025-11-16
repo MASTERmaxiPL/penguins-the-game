@@ -5,7 +5,7 @@
 
 void PlacementPhase_Run(GameManager *gm) {
     printf("Placement Phase\n");
-    for ( int turn = 1; turn < gm->penguinsPerPlayer-1; turn++) {
+    for ( int turn = 1; turn < gm->penguinsPerPlayer+1; turn++) {
         printf("Turn %d\n", turn);
         for ( int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
             GameBoard_Print(&gm->gb);
