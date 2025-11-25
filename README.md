@@ -3,7 +3,7 @@
 ### The project is focused on preparing the game based on given rules and developing c programming language skills
 
 #### The rules:
-1. This is a simplified version of board game “Hey, that’s mine fish".<img width="768" height="2121" alt="Penguins_flowchart drawio_6" src="https://github.com/user-attachments/assets/73681faf-88d4-426d-b868-23f2de3f3efc" />
+1. This is a simplified version of board game “Hey, that’s mine fish".
 
 2. Game is played in turns - in each turn each player moves one penguin. The aim is to collect the  most fish.
 3. The game board is arranged in a square grid with m rows and n columns. Each field of the grid  can be empty or can have an ice floe with 1, 2 or 3 fish on it.
@@ -19,3 +19,4 @@ a) In his turn, the player chooses one of his penguins and moves it in a straigh
 b) If possible, the move is compulsory.  
 c) Game ends when no penguin can make a move.
 8. The player who collects the most fish wins.
+<img width="768" height="2121" alt="Penguins_flowchart drawio_6" src="https://github.com/user-attachments/assets/73681faf-88d4-426d-b868-23f2de3f3efc" />
