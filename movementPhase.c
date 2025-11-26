@@ -55,12 +55,12 @@ bool GameBoard_IsValidMove(const GameBoard *gb, int sx, int sy, int ex, int ey) 
     return false;
 }
 
-bool GameBoard_MovePenguin(GameBoard *gb, int sx, int sy, int ex, int ey) {
-    if (!GameBoard_IsValidMove(gb, sx, sy, ex, ey))
+bool MovementPhase_MovePenguin(GameBoard gb, int startx, int starty, int endx, int endy) {
+    if (!Movement_IsValidMove(gb, startx, starty, endx, endy))
         return false;
 
-    IceFloe *start = &gb->floeGrid[sy][sx];
-    IceFloe *target = &gb->floeGrid[ey][ex];
+    IceFloestart = &gb->floeGrid[starty][stratx];
+    IceFloe target = &gb->floeGrid[endy][endx];
 
     target->occupantId = start->occupantId;
 
@@ -71,23 +71,23 @@ bool GameBoard_MovePenguin(GameBoard *gb, int sx, int sy, int ex, int ey) {
     return true;
 }
 
-void GameBoard_MovementPhase(GameBoard *gb, int currentPlayer) {
-    int sx, sy, ex, ey;
+void MovementPhase_Movement(GameBoardgb, int currentPlayer) {
+    int startx, starty, endx, endy;
 
     printf("Player %d, choose penguin to move (x y): ", currentPlayer + 1);
-    scanf("%d %d", &sx, &sy);
+    scanf("%d %d", &startx, &starty);
 
-    if (!GameBoard_IsInBounds(gb, sx, sy) ||
-        gb->floeGrid[sy][sx].occupantId != currentPlayer) 
+    if (!MovmentPhase_IsInBounds(gb, startx, starty) ||
+        gb->floeGrid[starty][startx].occupantId != currentPlayer) 
     {
         printf("Invalid penguin.\n");
         return;
     }
 
     printf("Choose destination (x y): ");
-    scanf("%d %d", &ex, &ey);
+    scanf("%d %d", &endx, &endy);
 
-    if (GameBoard_MovePenguin(gb, sx, sy, ex, ey)) {
+    if (MovementPhase_MovePenguin(gb, startx, starty, endx, endy)) {
         printf("Move successful!\n");
     } else {
         printf("Invalid move.\n");
