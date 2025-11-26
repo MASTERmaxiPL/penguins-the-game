@@ -3,8 +3,5 @@
 
 #include "gameManager.h"
 
-static const int DIRS[4][2];
-bool GameBoard_IsInBounds(const GameBoard *gb, int x, int y);
-bool GameBoard_IsValidMove(const GameBoard *gb, int sx, int sy, int ex, int ey);
-
+bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y);
 #endif
