@@ -5,6 +5,18 @@
 #include <stdbool.h>
 #include <time.h>
 
+typedef struct {
+    bool isFloating;
+    int fishCount;
+    int occupantId;
+} IceFloe;
+
+typedef struct {
+    int boardWidth;
+    int boardHeight;
+    IceFloe **floeGrid;
+} GameBoard;
+
 bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
