@@ -1,6 +1,7 @@
 #include "gameManager.h"
 #include "boardGenerator.h"
 #include "placementPhase.h"
+#include "movementPhase.h"
 
 #include <stdio.h>
 #include <stdlib.h>
