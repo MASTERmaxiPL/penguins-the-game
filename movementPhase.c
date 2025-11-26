@@ -48,8 +48,8 @@ bool MovementPhase_MovePenguin(GameBoard gb, int startx, int starty, int endx, i
     if (!MovementPhase_IsValidMove(gb, startx, starty, endx, endy))
         return false;
 
-    IceFloe start = &gb->floeGrid[starty][startx];
-    IceFloe target = &gb->floeGrid[endy][endx];
+    IceFloe *start = &gb->floeGrid[starty][startx];
+    IceFloe *target = &gb->floeGrid[endy][endx];
 
     target->occupantId = start->occupantId;
 
