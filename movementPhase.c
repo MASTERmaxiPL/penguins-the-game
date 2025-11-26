@@ -46,8 +46,7 @@ bool GameBoard_IsValidMove(const GameBoard *gb, int sx, int sy, int ex, int ey) 
             cy += stepy;
             const IceFloe *f = &gb->floeGrid[cy][cx];
 
-            if (!f->isFloating) return false;
-            if (f->occupantId != -1) return false;
+            if (!f->isFloating || f->occupantId != -1) return false;
         }
 
         return true;
