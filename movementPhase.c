@@ -2,24 +2,24 @@
 
 #include <stdio.h>
 
-bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y) {
+bool MovementPhase_IsInBounds(const GameBoard *gb, const int x, const int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
 
-bool MovementPhase_IsValidMove(const GameBoard *gb, int startx, int starty, int endx, int endy) {
-    if (!MovementPhase_IsInBounds(gb, startx, starty) || !MovementPhase_IsInBounds(gb, endx, endy))
+bool MovementPhase_IsValidMove(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+    if (!MovementPhase_IsInBounds(gb, startX, startY) || !MovementPhase_IsInBounds(gb, endX, endY))
         return false;
 
-    const IceFloe *start = &gb->floeGrid[starty][startx];
-    const IceFloe *target = &gb->floeGrid[endy][endx];
+    const IceFloe *start = &gb->floeGrid[startY][startX];
+    const IceFloe *target = &gb->floeGrid[endY][endX];
 
     if (start->occupantId == -1) return false;
 
     if (!target->isFloating) return false;
     if (target->occupantId != -1) return false;
 
-    int differencex = endx - startx;
-    int differencey = endy - starty;
+    int differencex = endX - startX;
+    int differencey = endY - startY;
 
     if (differencex != 0 && differencey != 0)
         return false;
@@ -30,10 +30,10 @@ bool MovementPhase_IsValidMove(const GameBoard *gb, int startx, int starty, int 
     if (stepx == 0 && stepy == 0)
         return false;
 
-    int curentx = startx + stepx;
-    int curenty = starty + stepy;
+    int curentx = startX + stepx;
+    int curenty = startY + stepy;
 
-    while (curentx != endx || curenty != endy) {
+    while (curentx != endX || curenty != endY) {
         const IceFloe *f = &gb->floeGrid[curenty][curentx];
         if (!f->isFloating) return false;
         if (f->occupantId != -1) return false;
@@ -44,12 +44,12 @@ bool MovementPhase_IsValidMove(const GameBoard *gb, int startx, int starty, int 
     return true;
 }
 
-bool MovementPhase_MovePenguin(GameBoard gb, int startx, int starty, int endx, int endy) {
-    if (!MovementPhase_IsValidMove(gb, startx, starty, endx, endy))
+bool MovementPhase_MovePenguin(GameBoard gb, int startX, int startY, int endX, int endY) {
+    if (!MovementPhase_IsValidMove(gb, startX, startY, endX, endY))
         return false;
 
-    IceFloe start = &gb->floeGrid[starty][startx];
-    IceFloe target = &gb->floeGrid[endy][endx];
+    IceFloe start = &gb->floeGrid[startY][startX];
+    IceFloe target = &gb->floeGrid[endY][endX];
 
     target->occupantId = start->occupantId;
 
