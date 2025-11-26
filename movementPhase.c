@@ -82,3 +82,7 @@ void MovementPhase_Movement(GameBoard gb, int currentPlayer) {
         printf("Invalid move.\n");
     }
 }
+
+int main() {
+    
+}
