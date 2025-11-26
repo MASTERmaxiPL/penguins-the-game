@@ -30,22 +30,22 @@ bool MovementPhase_IsValidMove(const GameBoard *gb, const int startX, const int 
     if (stepX == 0 && stepY == 0)
         return false;
 
-    int curentx = startX + stepX;
-    int curenty = startY + stepY;
+    int currentX = startX + stepX;
+    int currentY = startY + stepY;
 
-    while (curentx != endX || curenty != endY) {
-        const IceFloe *f = &gb->floeGrid[curenty][curentx];
+    while (currentX != endX || currentY != endY) {
+        const IceFloe *f = &gb->floeGrid[currentY][currentX];
         if (!f->isFloating) return false;
         if (f->occupantId != -1) return false;
-        curentx += stepX;
-        curenty += stepY;
+        currentX += stepX;
+        currentY += stepY;
     }
 
     return true;
 }
 
-bool MovementPhase_MovePenguin(GameBoard gb, const int startX, const int startY, const int endX, const int endY) {
-    if (!MovementPhase_IsValidMove(&gb, startX, startY, endX, endY))
+bool MovementPhase_MovePenguin(GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+    if (!MovementPhase_IsValidMove(gb, startX, startY, endX, endY))
         return false;
 
     IceFloe *start = &gb->floeGrid[startY][startX];
@@ -60,23 +60,23 @@ bool MovementPhase_MovePenguin(GameBoard gb, const int startX, const int startY,
     return true;
 }
 
-void MovementPhase_Movement(GameBoard gb, int currentPlayer) {
-    int startx, starty, endx, endy;
+void MovementPhase_Movement(GameBoard *gb, const int currentPlayer) {
+    int startX, startY, endX, endY;
 
     printf("Player %d, choose penguin to move (x y): ", currentPlayer + 1);
-    scanf("%d %d", &startx, &starty);
+    scanf("%d %d", &startX, &startY);
 
-    if (!MovementPhase_IsInBounds(&gb, startx, starty) ||
-        gb->floeGrid[starty][startx].occupantId != currentPlayer) 
+    if (!MovementPhase_IsInBounds(gb, startX, startY) ||
+        gb->floeGrid[startY][startX].occupantId != currentPlayer)
     {
         printf("Invalid penguin.\n");
         return;
     }
 
     printf("Choose destination (x y): ");
-    scanf("%d %d", &endx, &endy);
+    scanf("%d %d", &endX, &endY);
 
-    if (MovementPhase_MovePenguin(gb, startx, starty, endx, endy)) {
+    if (MovementPhase_MovePenguin(gb, startX, startY, endX, endY)) {
         printf("Move successful!\n");
     } else {
         printf("Invalid move.\n");
