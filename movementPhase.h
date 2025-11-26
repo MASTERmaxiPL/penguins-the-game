@@ -6,5 +6,6 @@
 bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y);
 bool MovementPhase_IsValidMove(const GameBoard *gb, int startx, int starty, int endx, int endy);
 bool MovementPhase_MovePenguin(GameBoard gb, int startx, int starty, int endx, int endy);
+void MovementPhase_Movement(GameBoardgb, int currentPlayer);
 
 #endif
