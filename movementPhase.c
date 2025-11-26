@@ -44,8 +44,8 @@ bool MovementPhase_IsValidMove(const GameBoard *gb, const int startX, const int 
     return true;
 }
 
-bool MovementPhase_MovePenguin(GameBoard gb, int startX, int startY, int endX, int endY) {
-    if (!MovementPhase_IsValidMove(gb, startX, startY, endX, endY))
+bool MovementPhase_MovePenguin(GameBoard gb, const int startX, const int startY, const int endX, const int endY) {
+    if (!MovementPhase_IsValidMove(&gb, startX, startY, endX, endY))
         return false;
 
     IceFloe *start = &gb->floeGrid[startY][startX];
@@ -66,7 +66,7 @@ void MovementPhase_Movement(GameBoard gb, int currentPlayer) {
     printf("Player %d, choose penguin to move (x y): ", currentPlayer + 1);
     scanf("%d %d", &startx, &starty);
 
-    if (!MovementPhase_IsInBounds(gb, startx, starty) ||
+    if (!MovementPhase_IsInBounds(&gb, startx, starty) ||
         gb->floeGrid[starty][startx].occupantId != currentPlayer) 
     {
         printf("Invalid penguin.\n");
