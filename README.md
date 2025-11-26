@@ -4,7 +4,6 @@
 
 #### The rules:
 1. This is a simplified version of board game “Hey, that’s mine fish".
-
 2. Game is played in turns - in each turn each player moves one penguin. The aim is to collect the  most fish.
 3. The game board is arranged in a square grid with m rows and n columns. Each field of the grid  can be empty or can have an ice floe with 1, 2 or 3 fish on it.
 4. Each game is played on a new, possibly randomly generated, board. Each player has a certain  (known) number of penguins.
