@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+
 #include "movementPhase.h"
 
 bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y) {
@@ -42,7 +47,6 @@ bool MovementPhase_IsValidMove(const GameBoard *gb, int startx, int starty, int 
     return true;
 }
 
-
 bool MovementPhase_MovePenguin(GameBoard gb, int startx, int starty, int endx, int endy) {
     if (!Movement_IsValidMove(gb, startx, starty, endx, endy))
         return false;
@@ -65,7 +69,7 @@ void MovementPhase_Movement(GameBoardgb, int currentPlayer) {
     printf("Player %d, choose penguin to move (x y): ", currentPlayer + 1);
     scanf("%d %d", &startx, &starty);
 
-    if (!MovmentPhase_IsInBounds(gb, startx, starty) ||
+    if (!MovementPhase_IsInBounds(gb, startx, starty) ||
         gb->floeGrid[starty][startx].occupantId != currentPlayer) 
     {
         printf("Invalid penguin.\n");
