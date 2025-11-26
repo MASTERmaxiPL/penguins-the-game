@@ -1,9 +1,9 @@
+#include "movementPhase.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
-
-#include "movementPhase.h"
 
 bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
