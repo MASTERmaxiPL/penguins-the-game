@@ -25,7 +25,7 @@ void GameManager_Run(GameManager *gm) {
     printf("Game running...\n");
     while (gm->isRunning) {
         PlacementPhase_Run(gm);
-        // Movement Phase
+        MovementPhase_IsValidMove(gb, startX, startY, endX, endY);
         /*
         * if no more moves available
         * if (something)
