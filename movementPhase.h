@@ -4,9 +4,13 @@
 #include "gameBoard.h"
 #include "gameManager.h"
 
-bool MovementPhase_IsInBounds(const GameBoard *gb, int x, int y);
-bool MovementPhase_IsValidMove(const GameBoard *gb, int startX, int startY, int endX, int endY);
-bool MovementPhase_MovePenguin(GameBoard *gb, int startX, int startY, int endX, int endY);
-void MovementPhase_Movement(GameBoard *gb, int currentPlayer);
+
+void MovementPhase_Run(const GameManager *gm);
+bool Check_Player_Has_Any_Moves(const GameBoard *gb, int currentPlayerIndex);
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, int posX, int posY, int boardHeight, int boardWidth, int currentPlayerIndex);
+bool Is_Move_In_Bounds(const GameBoard *gb, int x, int y);
+bool Is_Valid_Move(const GameBoard *gb, int startX, int startY, int endX, int endY);
+bool Move_Penguin(const GameBoard *gb, int startX, int startY, int endX, int endY);
+void Player_Movement_Turn(const GameBoard *gb, int currentPlayerIndex);
 
 #endif
