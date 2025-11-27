@@ -14,4 +14,5 @@ add_executable(penguins_the_game main.c
         movementPhase.h
         iceFloe.h
         gameBoard.h
+        noise.c
 )

@@ -18,7 +18,7 @@ void GameManager_Init(GameManager *gm) {
 
     printf("Game initialized!\n");
 
-    GameBoard_Print(&gm->gb);
+    Print_Board(&gm->gb);
 }
 
 void GameManager_Run(GameManager *gm) {
