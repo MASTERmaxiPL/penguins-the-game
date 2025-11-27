@@ -18,3 +18,4 @@ a) In his turn, the player chooses one of his penguins and moves it in a straigh
 b) If possible, the move is compulsory.  
 c) Game ends when no penguin can make a move.
 8. The player who collects the most fish wins.
+<img width="768" height="2121" alt="Penguins_flowchart drawio_6" src="https://github.com/user-attachments/assets/73681faf-88d4-426d-b868-23f2de3f3efc" />

@@ -1,13 +1,14 @@
 #include "gameManager.h"
 #include "boardGenerator.h"
 #include "placementPhase.h"
+#include "movementPhase.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 void GameManager_Init(GameManager *gm) {
     gm->numOfPlayers = 2; // Currently fixed to 2 players
-    gm->penguinsPerPlayer = 8; // Currently fixed to 8 penguins per player
+    gm->penguinsPerPlayer = 3; // Currently fixed to 8 penguins per player
     gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
 
@@ -24,7 +25,7 @@ void GameManager_Run(GameManager *gm) {
     printf("Game running...\n");
     while (gm->isRunning) {
         PlacementPhase_Run(gm);
-        // Movement Phase
+        MovementPhase_Run(gm);
         /*
         * if no more moves available
         * if (something)
