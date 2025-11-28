@@ -79,10 +79,18 @@ void Generate_Board(GameBoard *gb) {
 }
 
 void Print_Board(const GameBoard *gb) {
+    printf("   ");
+    for (int x = 0; x < gb->boardWidth; x++) {
+        if (x<10)
+            printf("  %d  ", x);
+        else
+            printf(" %3d ", x);
+    }
+    printf("\n");
     for (int y = 0; y < gb->boardHeight; y++) {
+        printf("%2d ", y);
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
-
             if (floe->occupantId != -1) // if occupied
             {
                 printf("| P%d ", floe->occupantId + 1);

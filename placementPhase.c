@@ -40,7 +40,7 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
-        if (floe->isFloating && floe->occupantId == -1) {
+        if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
             Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
             break;
         }
