@@ -108,6 +108,7 @@ void Print_Board(const GameBoard *gb) {
     }
 }
 
+
 void GameBoard_Cleanup(GameBoard *gb) {
     for (int i = 0; i < gb->boardHeight; i++) {
         free(gb->floeGrid[i]);
