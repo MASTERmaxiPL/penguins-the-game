@@ -72,7 +72,7 @@ void Generate_Board(GameBoard *gb) {
             const double terrainValue = noiseValue - falloff + randomJitter;
 
             floe->isFloating = (terrainValue > threshold) ? 1 : 0;
-            floe->fishCount = floe->isFloating ? rand() % (MAX_FISH_COUNT + 1) : 0;
+            floe->fishCount = floe->isFloating ? rand() % MAX_FISH_COUNT + 1 : 0;
             floe->occupantId = -1;
         }
     }
