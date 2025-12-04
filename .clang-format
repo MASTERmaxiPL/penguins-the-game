@@ -1,4 +1,4 @@
-Standard: Latest
+Standard: c++20
 
 # --- Indentation ---
 UseTab: Always
