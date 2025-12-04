@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.0)
 project(penguins_the_game C)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(penguins_the_game main.c
         gameManager.c

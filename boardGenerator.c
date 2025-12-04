@@ -8,7 +8,6 @@
 
 #define MAX_FISH_COUNT 3
 
-
 static void Init_Random_Seed(void) {
     static int seeded = 0;
     if (!seeded) {
