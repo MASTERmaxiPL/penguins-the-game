@@ -6,7 +6,6 @@
 #define IS_FLOATING_PROBABILITY 75
 #define MAX_FISH_COUNT 3
 
-
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
