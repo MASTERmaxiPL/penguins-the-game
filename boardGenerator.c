@@ -6,11 +6,10 @@
 #define IS_FLOATING_PROBABILITY 75
 #define MAX_FISH_COUNT 3
 
-
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
-    gb->floeGrid = nullptr;
+    gb->floeGrid = NULL;
 
     gb->floeGrid = malloc(boardHeight * sizeof(IceFloe *));
     for (int i = 0; i < boardHeight; i++) {
@@ -70,5 +69,5 @@ void GameBoard_Cleanup(GameBoard *gb) {
         free(gb->floeGrid[i]);
     }
     free(gb->floeGrid);
-    gb->floeGrid = nullptr;
+    gb->floeGrid = NULL;
 }

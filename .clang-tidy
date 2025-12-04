@@ -11,7 +11,7 @@ Checks: >
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-union-access
 
-WarningsAsErrors: true
+WarningsAsErrors: ".*"
 HeaderFilterRegex: '.*'
 
 CheckOptions:
