@@ -51,7 +51,7 @@ jobs:
           # Save xml report for upload if failure
           cppcheck \
             --enable=warning,style,performance,portability \
-            --std=c11 \
+            --std=c23 \
             --language=c \
             --suppress=missingIncludeSystem \
             --xml \
@@ -71,7 +71,7 @@ jobs:
       - name: Run clang-tidy
         run: |
           # Run clang-tidy on tracked C files. Prefer compile_commands.json if available.
-          CT_FLAGS="-std=c23 -I."
+          CT_FLAGS=(-std=c23 -I.)
           if [ -f build/compile_commands.json ]; then
             CT_DB_DIR="build"
           elif [ -f compile_commands.json ]; then
@@ -84,7 +84,7 @@ jobs:
             if [ -n "$CT_DB_DIR" ]; then
               clang-tidy "$f" -p="$CT_DB_DIR" --quiet > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
             else
-              clang-tidy "$f" -- "$CT_FLAGS" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
+              clang-tidy "$f" -- "$CT_FLAGS[@]" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
             fi
           done
           # If any log contains "error:" treat as failure
