@@ -84,7 +84,7 @@ jobs:
             if [ -n "$CT_DB_DIR" ]; then
               clang-tidy "$f" -p="$CT_DB_DIR" --quiet > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
             else
-              clang-tidy "$f" -- "$CT_FLAGS[@]" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
+              clang-tidy "$f" -- "${CT_FLAGS[@]}" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
             fi
           done
           # If any log contains "error:" treat as failure
