@@ -1,0 +1,97 @@
+name: C23 Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  setup-and-checks:
+    runs-on: ubuntu-latest
+    env:
+      CC: clang
+      CFLAGS: -std=c23 -Wall -Wextra -Wpedantic
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang gcc g++ make cppcheck clang-tidy clang-format bear
+
+      - name: Build (prefer Makefile + bear, fallback to per-file compile)
+        run: |
+          set -e
+          mkdir -p build
+          if [ -f Makefile ] || [ -f makefile ]; then
+            # Use bear to capture compile commands for clang-tidy
+            if command -v bear >/dev/null 2>&1; then
+              bear -- make -j$(nproc) || (echo "make failed"; exit 1)
+              # bear produces compile_commands.json in repo root
+              if [ -f compile_commands.json ]; then
+                mv compile_commands.json build/ || true
+              fi
+            else
+              make -j$(nproc) || (echo "make failed"; exit 1)
+            fi
+          else
+            # Fallback: compile all tracked .c files into object files (no link)
+            git ls-files '*.c' | xargs -r -n1 -I{} sh -c "$CC $CFLAGS -I. -c '{}' -o build/$(basename '{}').o"
+          fi
+
+      - name: Run cppcheck (static analysis)
+        run: |
+          # Save xml report for upload if failure
+          cppcheck --enable=warning,style,performance,portability --std=c11 --language=c --suppress=missingIncludeSystem --xml . 2> cppcheck-report.xml || true
+          # Fail the step if cppcheck found errors (exit code is non-zero only for errors)
+          if grep -q '<error ' cppcheck-report.xml; then
+            echo "cppcheck errors detected"
+            exit 1
+          fi
+
+      - name: Run clang-tidy
+        run: |
+          # Run clang-tidy on tracked C files. Prefer compile_commands.json if available.
+          CT_FLAGS="-std=c23 -I."
+          if [ -f build/compile_commands.json ]; then
+            CT_DB_DIR="build"
+          elif [ -f compile_commands.json ]; then
+            CT_DB_DIR="."
+          else
+            CT_DB_DIR=""
+          fi
+          mkdir -p clang-tidy-logs
+          git ls-files '*.c' | while read -r f; do
+            if [ -n "$CT_DB_DIR" ]; then
+              clang-tidy "$f" -p="$CT_DB_DIR" --quiet > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
+            else
+              clang-tidy "$f" -- "$CT_FLAGS" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
+            fi
+          done
+          # If any log contains "error:" treat as failure
+          if grep -R "error:" clang-tidy-logs | grep -v "warning:"; then
+            echo "clang-tidy reported errors"
+            exit 1
+          fi
+
+      - name: Check formatting with clang-format
+        run: |
+          # Check formatting of tracked C/H files
+          git ls-files '*.c' '*.h' | xargs -r clang-format -style=file --dry-run --Werror
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c-check-logs
+          path: |
+            build/
+            cppcheck-report.xml
+            clang-tidy-logs/

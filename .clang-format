@@ -1,0 +1,20 @@
+BasedOnStyle: LLVM
+
+# --- Indentation ---
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+
+# --- Line length ---
+ColumnLimit: 100
+
+# --- Spacing ---
+SpaceBeforeParens: ControlStatements
+
+# --- Braces ---
+BreakBeforeBraces: Attach
+
+# --- Misc clarity settings ---
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
