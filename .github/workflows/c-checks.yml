@@ -49,8 +49,20 @@ jobs:
       - name: Run cppcheck (static analysis)
         run: |
           # Save xml report for upload if failure
-          cppcheck --enable=warning,style,performance,portability --std=c11 --language=c --suppress=missingIncludeSystem --xml . 2> cppcheck-report.xml || true
-          # Fail the step if cppcheck found errors (exit code is non-zero only for errors)
+          cppcheck \
+            --enable=warning,style,performance,portability \
+            --std=c11 \
+            --language=c \
+            --suppress=missingIncludeSystem \
+            --xml \
+            --inline-suppr \
+            --error-exitcode=1 \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=cmake-build-debug \
+            --force \
+            . 2> cppcheck-report.xml || true
+        
           if grep -q '<error ' cppcheck-report.xml; then
             echo "cppcheck errors detected"
             exit 1
