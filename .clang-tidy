@@ -1,17 +1,19 @@
 Checks: >
   clang-analyzer-*,
   bugprone-*,
-  performance-*,
-  readability-*,
-  portability-*,
   cppcoreguidelines-*,
-  modernize-*,
-  misc-*
+  misc-*,
+  portability-*,
+  readability-*,
+  performance-*,
+  -modernize-*,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-union-access
 
-WarningsAsErrors: ''
+WarningsAsErrors: true
 HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: false
 
 CheckOptions:
-  - key: readability-braces-around-statements.ShortStatementLines
+  - key: readability-magic-numbers.IgnorePowersOf2
     value: '1'
