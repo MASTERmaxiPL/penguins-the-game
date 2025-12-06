@@ -7,8 +7,8 @@
 #include <stdlib.h>
 
 void GameManager_Init(GameManager *gm) {
-    const int boardWidth;
-    const int boardHeight;
+    int boardWidth;
+    int boardHeight;
     while (1) {
         printf("Enter board width (5<x<20): ");
         const int inputCountBW = scanf("%d", &boardWidth);
