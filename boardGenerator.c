@@ -17,7 +17,7 @@ static void Init_Random_Seed(void) {
     }
 }
 
-void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
+int GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
     gb->floeGrid = nullptr;
@@ -33,10 +33,10 @@ void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) 
     }
 
     Init_Random_Seed();
-    Generate_Board(gb);
+    return Generate_Board(gb);
 }
 
-void Generate_Board(GameBoard *gb) {
+int Generate_Board(GameBoard *gb) {
     const int fbmOctaves = 5;
     const double fbmLacunarity = 2.0;
     const double fbmGain = 0.5;
@@ -50,6 +50,8 @@ void Generate_Board(GameBoard *gb) {
     const double edgeFalloffExponent = 2;
     const double threshold = -0.04;
     const double maxRandomJitter = 0.15;
+
+    int placeableFloe;
 
     for (int y = 0; y < gb->boardHeight; y++) {
         const double noiseY = ((double)y - height * 0.5) / noiseScale;
@@ -74,8 +76,13 @@ void Generate_Board(GameBoard *gb) {
             floe->isFloating = (terrainValue > threshold) ? 1 : 0;
             floe->fishCount = floe->isFloating ? rand() % (MAX_FISH_COUNT + 1) : 0;
             floe->occupantId = -1;
+
+            if (floe->fishCount == 1) {
+                placeableFloe += 1;
+            }
         }
     }
+    return placeableFloe;
 }
 
 void Print_Board(const GameBoard *gb) {

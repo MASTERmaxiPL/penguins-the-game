@@ -2,38 +2,20 @@
 #include "boardGenerator.h"
 #include "placementPhase.h"
 #include "movementPhase.h"
+#include "math.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#define minWidth 10
+#define maxWidth 30
+#define minHeight 10
+#define maxHeight 30
+
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
-    while (1) {
-        printf("Enter board width (5<x<20): ");
-        const int inputCountBW = scanf("%d", &boardWidth);
-        if (inputCountBW != 1) {
-            printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
-            continue;
-        }
-        if (boardWidth < 5 || boardWidth > 20) {
-            printf("The conditions are not met!\n");
-            continue;
-        }
-        printf("Enter board height (5<y<20): ");
-        const int inputCountBH = scanf("%d", &boardHeight);
-        if (inputCountBH != 1) {
-            printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
-            continue;
-        }
-        if (boardHeight < 5 || boardHeight > 20) {
-            printf("The conditions are not met!\n");
-        }
-        else
-            break;
-    }
+    int maxPenguins;
     while (1) {
         printf("Enter number of players (n>1): ");
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
@@ -48,24 +30,52 @@ void GameManager_Init(GameManager *gm) {
         else
             break;
     }
+
     while (1) {
-        printf("Enter number of penguins per player (n>0): ");
+        printf("Enter board width (10<x<30): ");
+        const int inputCountBW = scanf("%d", &boardWidth);
+        if (inputCountBW != 1) {
+            printf("Invalid input! Please enter integer.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        if (boardWidth < minWidth || boardWidth > maxWidth) {
+            printf("The conditions are not met!\n");
+            continue;
+        }
+        printf("Enter board height (10<y<30): ");
+        const int inputCountBH = scanf("%d", &boardHeight);
+        if (inputCountBH != 1) {
+            printf("Invalid input! Please enter integer.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        if (boardHeight < minHeight || boardHeight > maxHeight) {
+            printf("The conditions are not met!\n");
+        }
+        else
+            break;
+    }
+
+    gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
+    gm->isRunning = true;
+
+    maxPenguins = floor(GameBoard_Init(&gm->gb, boardWidth, boardHeight) / gm->numOfPlayers);
+
+    while (1) {
+        printf("Enter number of penguins per player (0<n<%d): ", maxPenguins);
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
             printf("Invalid input! Please enter integer.\n");
             while (getchar() != '\n');
             continue;
         }
-        if (gm->penguinsPerPlayer < 1) {
-            printf("The number of penguins must be greater than 0.\n");
+        if (gm->penguinsPerPlayer < 1 || gm->penguinsPerPlayer > maxPenguins) {
+            printf("The number of penguins must be between 1 and %d.\n", maxPenguins);
         }
         else
             break;
     }
-    gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
-    gm->isRunning = true;
-
-    GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     printf("Game initialized!\n");
 
