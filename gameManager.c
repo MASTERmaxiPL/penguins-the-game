@@ -7,8 +7,6 @@
 #include <stdlib.h>
 
 void GameManager_Init(GameManager *gm) {
-    //gm->numOfPlayers = 2;
-    //gm->penguinsPerPlayer = 3;
     const int boardWidth;
     const int boardHeight;
     while (1) { // Board sizes
