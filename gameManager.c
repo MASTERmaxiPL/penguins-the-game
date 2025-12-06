@@ -9,7 +9,7 @@
 void GameManager_Init(GameManager *gm) {
     const int boardWidth;
     const int boardHeight;
-    while (1) { // Board sizes
+    while (1) {
         printf("Enter board width (5<x<20): ");
         const int inputCountBW = scanf("%d", &boardWidth);
         if (inputCountBW != 1) {
@@ -34,7 +34,7 @@ void GameManager_Init(GameManager *gm) {
         else
             break;
     }
-    while (1) { // Number of players
+    while (1) {
         printf("Enter number of players (n>1): ");
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
         if (inputCountNOP != 1) {
@@ -48,7 +48,7 @@ void GameManager_Init(GameManager *gm) {
         else
             break;
     }
-    while (1) { // Number of penguins per player
+    while (1) {
         printf("Enter number of penguins per player (n>0): ");
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
@@ -64,8 +64,7 @@ void GameManager_Init(GameManager *gm) {
     }
     gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
-    //const int boardWidth = 8 + rand() % 4;
-    //const int boardHeight = 8 + rand() % 4;
+
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     printf("Game initialized!\n");
