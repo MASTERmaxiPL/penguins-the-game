@@ -8,7 +8,7 @@
 
 #define MAX_FISH_COUNT 3
 
-static void Init_Random_Seed(void) {
+static void Init_Random_Seed() {
     static int seeded = 0;
     if (!seeded) {
         srand((unsigned int)time(nullptr) ^ (unsigned int)(uintptr_t) &seeded);
@@ -113,7 +113,6 @@ void Print_Board(const GameBoard *gb) {
         printf("| \n");
     }
 }
-
 
 void GameBoard_Cleanup(GameBoard *gb) {
     for (int i = 0; i < gb->boardHeight; i++) {
