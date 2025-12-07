@@ -63,7 +63,7 @@ void GameManager_Init(GameManager *gm) {
     maxPenguins = floor(GameBoard_Init(&gm->gb, boardWidth, boardHeight) / gm->numOfPlayers);
 
     while (1) {
-        printf("Enter number of penguins per player (0<n<%d): ", maxPenguins);
+        printf("Enter number of penguins per player (0<n<=%d): ", maxPenguins);
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
             printf("Invalid input! Please enter integer.\n");
