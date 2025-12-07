@@ -12,8 +12,8 @@ jobs:
   setup-and-checks:
     runs-on: ubuntu-latest
     env:
-      CC: gcc
-      CFLAGS: -std=c23 -Wall -Wextra -Wpedantic
+      CC: clang
+      CFLAGS: -std=c2x -Wall -Wextra -Wpedantic
 
     steps:
       - name: Checkout
@@ -24,14 +24,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc make cppcheck bear
+          sudo apt-get install -y clang make cppcheck clang-tidy clang-format bear
 
       - name: Build (prefer Makefile + bear, fallback to per-file compile)
         run: |
           set -e
           mkdir -p build
           if [ -f Makefile ] || [ -f makefile ]; then
-            # Use bear to capture compile commands if available
+            # Use bear to capture compile commands for clang-tidy
             if command -v bear >/dev/null 2>&1; then
               bear -- make -j$(nproc) || (echo "make failed"; exit 1)
               # bear produces compile_commands.json in repo root
@@ -43,14 +43,14 @@ jobs:
             fi
           else
             # Fallback: compile all tracked .c files into object files (no link)
-            git ls-files '*.c' | xargs -r -n1 -I{} sh -c "$CC $CFLAGS -I. -c '{}' -o build/$(basename '{}').o"
+            git ls-files '*.c' | xargs -r -I{} sh -c '$CC $CFLAGS -I. -c "{}" -o build/$(basename "{}").o'
           fi
 
       - name: Run cppcheck (static analysis)
         run: |
           cppcheck \
             --enable=warning,style,performance,portability \
-            --std=c23 \
+            --std=c2x \
             --language=c \
             --suppress=missingIncludeSystem \
             --xml \
