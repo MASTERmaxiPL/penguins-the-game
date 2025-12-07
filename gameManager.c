@@ -21,7 +21,7 @@ void GameManager_Init(GameManager *gm) {
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
         if (inputCountNOP != 1) {
             printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
+            while (getchar() != '\n'){}
             continue;
         }
         if (gm->numOfPlayers < 2) {
@@ -36,7 +36,7 @@ void GameManager_Init(GameManager *gm) {
         const int inputCountBW = scanf("%d", &boardWidth);
         if (inputCountBW != 1) {
             printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
+            while (getchar() != '\n'){}
             continue;
         }
         if (boardWidth < minWidth || boardWidth > maxWidth) {
@@ -47,7 +47,7 @@ void GameManager_Init(GameManager *gm) {
         const int inputCountBH = scanf("%d", &boardHeight);
         if (inputCountBH != 1) {
             printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
+            while (getchar() != '\n'){}
             continue;
         }
         if (boardHeight < minHeight || boardHeight > maxHeight) {
@@ -57,10 +57,10 @@ void GameManager_Init(GameManager *gm) {
             break;
     }
 
+    GameBoard_Init(&gm->gb, boardWidth, boardHeight);
+
     gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
-
-    GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
@@ -69,7 +69,7 @@ void GameManager_Init(GameManager *gm) {
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
             printf("Invalid input! Please enter integer.\n");
-            while (getchar() != '\n');
+            while (getchar() != '\n'){}
             continue;
         }
         if (gm->penguinsPerPlayer < 1 || gm->penguinsPerPlayer > maxPenguins) {
