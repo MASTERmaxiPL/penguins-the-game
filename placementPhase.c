@@ -8,13 +8,13 @@ void PlacementPhase_Run(GameManager *gm) {
     for ( int turn = 1; turn < gm->penguinsPerPlayer+1; turn++) {
         printf("Turn %d\n", turn);
         for ( int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
-            GameBoard_Print(&gm->gb);
+            Print_Board(&gm->gb);
             Player_Placement_Turn(gm, currentPlayerIndex);
         }
     }
 
     printf("Placement Phase finished successfully!\n");
-    GameBoard_Print(&gm->gb);
+    Print_Board(&gm->gb);
     for ( int i = 0; i < gm->numOfPlayers; i++){
         printf("Player %d has %d fish after placement phase.\n", i+1, gm->playersScore[i]);
     }
@@ -40,7 +40,7 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
-        if (floe->isFloating && floe->occupantId == -1) {
+        if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
             Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
             break;
         }

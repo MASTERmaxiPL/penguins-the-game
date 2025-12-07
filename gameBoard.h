@@ -6,6 +6,7 @@
 typedef struct {
     int boardWidth;
     int boardHeight;
+    int placeableFloeCount;
     IceFloe **floeGrid;
 } GameBoard;
 

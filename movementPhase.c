@@ -72,7 +72,7 @@ void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
 
     if (Move_Penguin(gb, startX, startY, endX, endY)) {
         printf("Move successful!\n");
-        GameBoard_Print(gb);
+        Print_Board(gb);
     } else {
         printf("Invalid move.\n");
     }
