@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h> // NOLINT - suppress 'possibly unused #include' in IDE (clang-tidy/clangd)
 #include <time.h>
 #include <math.h>
 
