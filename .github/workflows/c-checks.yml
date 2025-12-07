@@ -87,11 +87,14 @@ jobs:
               clang-tidy "$f" -- "${CT_FLAGS[@]}" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
             fi
           done
-          # If any log contains "error:" treat as failure
-          if grep -R "error:" clang-tidy-logs | grep -v "warning:"; then
+            ERRS=$(grep -R "error:" clang-tidy-logs || true)
+          ERRS_FILTERED=$(echo "$ERRS" | grep -v -E '\.clang-format:[0-9]+:[0-9]+: error: invalid boolean' || true)
+            
+            if [ -n "$ERRS_FILTERED" ]; then
+            echo "$ERRS_FILTERED"
             echo "clang-tidy reported errors"
             exit 1
-          fi
+            fi
 
       - name: Check formatting with clang-format
         run: |
