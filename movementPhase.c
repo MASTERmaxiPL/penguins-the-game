@@ -8,22 +8,37 @@ void MovementPhase_Run(const GameManager *gm) {
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
 
-    do{
-        currentPlayerIndex+=1;
+    do {
+        currentPlayerIndex++;
         if (currentPlayerIndex >= gm->numOfPlayers)
             currentPlayerIndex = 0;
 
-        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex))
+        bool hasMoves = Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex);
+
+        if (!hasMoves) {
             blocked_counter++;
-        else {
+        } else {
             blocked_counter = 0;
         }
-        if (blocked_counter == gm->numOfPlayers)
-            availableMoves = false;
 
-        Player_Movement_Turn(&gm->gb, currentPlayerIndex);
-    } while(availableMoves);
+        if (blocked_counter == gm->numOfPlayers) {
+            printf("\nNo players have any moves left. Game ends!\n");
+            Print_Final_Scores(gm);
+            availableMoves = false;
+            break;
+        }
+
+        // Only let the player move if they have a valid move
+        if (hasMoves) {
+            Player_Movement_Turn(gm, currentPlayerIndex);
+        } else {
+            printf("Player %d has no moves available, skipping...\n",
+                   currentPlayerIndex + 1);
+        }
+
+    } while (availableMoves);
 }
+
 
 bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerIndex) {
     bool availableMoves = false;
@@ -38,43 +53,54 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     return availableMoves;
 }
 
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex) {
-    if (posX != 0)
-        if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex)
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, int posX, int posY, int boardHeight, int boardWidth, int currentPlayerIndex)
+{
+    const int dirX[4] = { -1, 1, 0, 0 };
+    const int dirY[4] = { 0, 0, -1, 1 };
+
+    for (int d = 0; d < 4; d++) {
+        int x = posX + dirX[d];
+        int y = posY + dirY[d];
+
+        while (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
+            const IceFloe *f = &gb->floeGrid[y][x];
+
+            if (!f->isFloating) break;
+            if (f->occupantId != -1) break;
+
             return true;
-    if (posY != 0)
-        if (gb->floeGrid[posY-1][posX].occupantId != currentPlayerIndex)
-            return true;
-    if (posX != boardWidth-1)
-        if (gb->floeGrid[posX+1][posY].occupantId != currentPlayerIndex)
-            return true;
-    if (posY != boardHeight-1)
-        if (gb->floeGrid[posX][posY+1].occupantId != currentPlayerIndex)
-            return true;
+        }
+    }
     return false;
 }
 
-void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
+
+void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex) {
+
+    GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
 
-    printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
-    scanf("%d %d", &startX, &startY);
+    while(1){
+        printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
+        scanf("%d %d", &startX, &startY);
 
-    if (!Is_Move_In_Bounds(gb, startX, startY) ||
-        gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
-    {
-        printf("Invalid penguin.\n");
-        return;
-    }
+        if (!Is_Move_In_Bounds(gb, startX, startY) ||
+            gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
+        {
+            printf("Invalid penguin.\n");
+            continue;
+        }
 
-    printf("Choose destination (x y): ");
-    scanf("%d %d", &endX, &endY);
+        printf("Choose destination (x y): ");
+        scanf("%d %d", &endX, &endY);
 
-    if (Move_Penguin(gb, startX, startY, endX, endY)) {
-        printf("Move successful!\n");
-        GameBoard_Print(gb);
-    } else {
-        printf("Invalid move.\n");
+        if (Move_Penguin(gm, startX, startY, endX, endY)) {
+            printf("Move successful!\n");
+            Print_Board(gb);
+            break;
+        } else {
+            printf("Invalid move.\n");
+        }
     }
 }
 
@@ -82,14 +108,23 @@ bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
 
-bool Move_Penguin(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY) {
+
+    GameBoard *gb = &gm->gb;
+
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
 
-    IceFloe *start = &gb->floeGrid[startY][startX];
+    IceFloe *start  = &gb->floeGrid[startY][startX];
     IceFloe *target = &gb->floeGrid[endY][endX];
 
-    target->occupantId = start->occupantId;
+    int playerId = start->occupantId;
+
+    gm->playersScore[playerId] += start->fishCount;
+
+    printf("Player %d gains %d points! In total: %d\n", playerId + 1, start->fishCount, gm->playersScore[playerId]);
+
+    target->occupantId = playerId;
 
     start->isFloating = false;
     start->fishCount = 0;
@@ -97,6 +132,7 @@ bool Move_Penguin(const GameBoard *gb, const int startX, const int startY, const
 
     return true;
 }
+
 
 bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
     if (!Is_Move_In_Bounds(gb, startX, startY) || !Is_Move_In_Bounds(gb, endX, endY))
@@ -134,4 +170,24 @@ bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, cons
     }
 
     return true;
+}
+
+void Print_Final_Scores(const GameManager *gm) {
+    printf("\n============================\n");
+    printf("         FINAL SCORES       \n");
+    printf("============================\n");
+
+    for (int i = 0; i < gm->numOfPlayers; i++) {
+        printf("Player %d: %d points\n", i + 1, gm->playersScore[i]);
+    }
+
+    int best = 0;
+    for (int i = 1; i < gm->numOfPlayers; i++) {
+        if (gm->playersScore[i] > gm->playersScore[best]){
+            best = i;
+        }
+    }
+
+    printf("Winner: Player %d!\n", best + 1);
+    printf("============================\n\n");
 }
