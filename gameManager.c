@@ -87,11 +87,6 @@ void GameManager_Run(GameManager *gm) {
     while (gm->isRunning) {
         PlacementPhase_Run(gm);
         MovementPhase_Run(gm);
-        /*
-        * if no more moves available
-        * if (something)
-        *    gm->isRunning = 0;
-        */
         gm->isRunning=false;
     }
 }
