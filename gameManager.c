@@ -15,6 +15,7 @@
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
+
     while (1) {
         printf("Enter number of players (n>1): ");
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
@@ -59,7 +60,9 @@ void GameManager_Init(GameManager *gm) {
     gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
 
-    const int maxPenguins = floor(GameBoard_Init(&gm->gb, boardWidth, boardHeight) / gm->numOfPlayers);
+    GameBoard_Init(&gm->gb, boardWidth, boardHeight);
+
+    const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
     while (1) {
         printf("Enter number of penguins per player (0<n<=%d): ", maxPenguins);

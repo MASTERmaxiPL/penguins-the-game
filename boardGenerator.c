@@ -17,7 +17,7 @@ static void Init_Random_Seed(void) {
     }
 }
 
-int GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
+void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
     gb->floeGrid = nullptr;
@@ -33,10 +33,10 @@ int GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     }
 
     Init_Random_Seed();
-    return Generate_Board(gb);
+    Generate_Board(gb);
 }
 
-int Generate_Board(GameBoard *gb) {
+void Generate_Board(GameBoard *gb) {
     const int fbmOctaves = 5;
     const double fbmLacunarity = 2.0;
     const double fbmGain = 0.5;
@@ -51,7 +51,7 @@ int Generate_Board(GameBoard *gb) {
     const double threshold = -0.04;
     const double maxRandomJitter = 0.15;
 
-    int placeableFloe;
+    int placeableFloe = 0;
 
     for (int y = 0; y < gb->boardHeight; y++) {
         const double noiseY = ((double)y - height * 0.5) / noiseScale;
@@ -82,7 +82,7 @@ int Generate_Board(GameBoard *gb) {
             }
         }
     }
-    return placeableFloe;
+    gb->placeableFloeCount = placeableFloe;
 }
 
 void Print_Board(const GameBoard *gb) {
