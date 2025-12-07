@@ -3,6 +3,11 @@
 #include <stdint.h>
 #include <math.h>
 
+static unsigned int Hash_Coords(int x, int y, unsigned int seed);
+static double Value_Noise(double x, double y, unsigned int seed);
+static double Lerp(double a, double b, double t);
+static double Fade(double t);
+
 double Fbm(
     const double noiseX,
     const double noiseY,

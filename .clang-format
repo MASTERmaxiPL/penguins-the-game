@@ -16,5 +16,16 @@ BreakBeforeBraces: Attach
 
 # --- Misc clarity settings ---
 AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Empty
+
+AlignConsecutiveDeclarations: false
+AlignConsecutiveAssignments: false
+AlignConsecutiveMacros: false
+
+DerivePointerAlignment: false
+PointerAlignment: Right
+
+SortIncludes: false
+ReflowComments: Never
