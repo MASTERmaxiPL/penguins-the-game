@@ -50,6 +50,8 @@ void Generate_Board(GameBoard *gb) {
     const double threshold = -0.04;
     const double maxRandomJitter = 0.15;
 
+    int placeableFloe = 0;
+
     for (int y = 0; y < gb->boardHeight; y++) {
         const double noiseY = ((double)y - height * 0.5) / noiseScale;
         const double centeredOffsetY = ((double)y - height * 0.5) / (minDim * 0.5);
@@ -73,15 +75,28 @@ void Generate_Board(GameBoard *gb) {
             floe->isFloating = (terrainValue > threshold) ? 1 : 0;
             floe->fishCount = floe->isFloating ? rand() % MAX_FISH_COUNT + 1 : 0;
             floe->occupantId = -1;
+
+            if (floe->fishCount == 1) {
+                placeableFloe += 1;
+            }
         }
     }
+    gb->placeableFloeCount = placeableFloe;
 }
 
 void Print_Board(const GameBoard *gb) {
+    printf("   ");
+    for (int x = 0; x < gb->boardWidth; x++) {
+        if (x<10)
+            printf("  %d  ", x);
+        else
+            printf(" %3d ", x);
+    }
+    printf("\n");
     for (int y = 0; y < gb->boardHeight; y++) {
+        printf("%2d ", y);
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
-
             if (floe->occupantId != -1) // if occupied
             {
                 printf("| P%d ", floe->occupantId + 1);
@@ -98,6 +113,7 @@ void Print_Board(const GameBoard *gb) {
         printf("| \n");
     }
 }
+
 
 void GameBoard_Cleanup(GameBoard *gb) {
     for (int i = 0; i < gb->boardHeight; i++) {
