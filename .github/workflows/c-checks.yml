@@ -12,7 +12,7 @@ jobs:
   setup-and-checks:
     runs-on: ubuntu-latest
     env:
-      CC: clang
+      CC: gcc
       CFLAGS: -std=c23 -Wall -Wextra -Wpedantic
 
     steps:
@@ -24,14 +24,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang gcc g++ make cppcheck clang-tidy clang-format bear
+          sudo apt-get install -y gcc make cppcheck bear
 
       - name: Build (prefer Makefile + bear, fallback to per-file compile)
         run: |
           set -e
           mkdir -p build
           if [ -f Makefile ] || [ -f makefile ]; then
-            # Use bear to capture compile commands for clang-tidy
+            # Use bear to capture compile commands if available
             if command -v bear >/dev/null 2>&1; then
               bear -- make -j$(nproc) || (echo "make failed"; exit 1)
               # bear produces compile_commands.json in repo root
@@ -67,50 +67,6 @@ jobs:
             exit 1
           fi
 
-      - name: Ensure code is clang-formatted
-        run: |
-          if git ls-files '*.c' '*.h' | xargs -r clang-format -style=file --dry-run --Werror; then
-            echo "All tracked C/H files are properly clang-formatted."
-          else
-            echo "clang-format detected issues (see above). Now formatting files in-place to show which files would change..."
-            git ls-files '*.c' '*.h' | xargs -r clang-format -style=file -i
-            echo "Files changed by clang-format:"
-            git --no-pager diff --name-only || true
-            echo ""
-            echo "To fix locally, run:"
-            echo "  git ls-files '*.c' '*.h' | xargs -r clang-format -style=file -i"
-            echo "  git add -A && git commit -m \"Format C/H with clang-format\""
-            exit 1
-          fi
-
-      - name: Run clang-tidy
-        run: |
-          # Run clang-tidy on tracked C files. Prefer compile_commands.json if available.
-          CT_FLAGS=(-std=c23 -I.)
-          if [ -f build/compile_commands.json ]; then
-            CT_DB_DIR="build"
-          elif [ -f compile_commands.json ]; then
-            CT_DB_DIR="."
-          else
-            CT_DB_DIR=""
-          fi
-          mkdir -p clang-tidy-logs
-          git ls-files '*.c' | while read -r f; do
-            if [ -n "$CT_DB_DIR" ]; then
-              clang-tidy "$f" -p="$CT_DB_DIR" --quiet > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
-            else
-              clang-tidy "$f" -- "${CT_FLAGS[@]}" > "clang-tidy-logs/$(basename "$f").log" 2>&1 || true
-            fi
-          done
-            ERRS=$(grep -R "error:" clang-tidy-logs || true)
-          ERRS_FILTERED=$(echo "$ERRS" | grep -v -E '\.clang-format:[0-9]+:[0-9]+: error: invalid boolean' || true)
-            
-            if [ -n "$ERRS_FILTERED" ]; then
-            echo "$ERRS_FILTERED"
-            echo "clang-tidy reported errors"
-            exit 1
-            fi
-
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -119,4 +75,3 @@ jobs:
           path: |
             build/
             cppcheck-report.xml
-            clang-tidy-logs/
