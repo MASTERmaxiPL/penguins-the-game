@@ -13,7 +13,7 @@
 #define maxHeight 30
 
 void GameManager_Init(GameManager *gm) {
-    boardWidth;
+    int boardWidth;
     int boardHeight;
 
     while (1) {
