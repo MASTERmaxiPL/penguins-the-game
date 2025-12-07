@@ -28,4 +28,3 @@ DerivePointerAlignment: false
 PointerAlignment: Right
 
 SortIncludes: false
-ReflowComments: Never
