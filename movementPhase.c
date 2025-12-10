@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void MovementPhase_Run(const GameManager *gm) {
+void MovementPhase_Run(GameManager *gm) {
     bool availableMoves = true;
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
