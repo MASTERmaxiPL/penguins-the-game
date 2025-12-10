@@ -7,61 +7,81 @@
 #include <time.h>
 #include <math.h>
 
-#define MAX_FISH_COUNT 3   // Maximum number of fish assigned to a floating ice floe
+#define MAX_FISH_COUNT 3
 
-// Initializes the random number generator only once per program run
+/**
+ * @file boardGenerator.c
+ * @brief Implementation of GameBoard allocation, procedural generation and printing.
+ */
+
+/**
+ * @internal
+ * @brief Initialize srand() once per program run.
+ *
+ * This function ensures the random sequence is seeded only once.
+ */
 static void Init_Random_Seed() {
-    static int seeded = 0;   // Ensures srand() is called only once
-
+    static int seeded = 0;
     if (!seeded) {
-        // Seed randomness with current time XOR memory address
-        srand((unsigned int)time(nullptr) ^ (unsigned int)(uintptr_t)&seeded);
+        srand((unsigned int)time(NULL) ^ (unsigned int)(uintptr_t)&seeded);
         seeded = 1;
     }
 }
 
+/**
+ * @brief Initialize GameBoard memory and generate contents.
+ *
+ * Allocates the floeGrid as an array of row pointers and individual rows,
+ * then initializes the board via Generate_Board.
+ *
+ * @param gb Pointer to GameBoard structure to initialize.
+ * @param boardWidth Number of columns.
+ * @param boardHeight Number of rows.
+ */
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
-    gb->boardWidth = boardWidth;    // Store width of the board
-    gb->boardHeight = boardHeight;  // Store height of the board
-    gb->floeGrid = nullptr;         // Initialize grid pointer
+    gb->boardWidth = boardWidth;
+    gb->boardHeight = boardHeight;
+    gb->floeGrid = NULL;
 
-    // Allocate rows for the 2D array
     gb->floeGrid = malloc(boardHeight * sizeof(IceFloe *));
     for (int i = 0; i < boardHeight; i++) {
-        // Allocate columns for each row
         gb->floeGrid[i] = malloc(boardWidth * sizeof(IceFloe));
     }
 
-    // Check for allocation failure
     if (!gb->floeGrid) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
-    Init_Random_Seed();   // Ensure random number generator is initialized
-    Generate_Board(gb);   // Create a noise-based game board
+    Init_Random_Seed();
+    Generate_Board(gb);
 }
 
+/**
+ * @brief Generate the procedural board layout.
+ *
+ * Uses FBM noise to compute a terrain value for each grid cell, applies a
+ * radial falloff to make islands, and assigns fish counts and occupancy.
+ *
+ * @param gb Pointer to GameBoard to populate.
+ */
 void Generate_Board(GameBoard *gb) {
-    // Configuration parameters for FBM (fractal Brownian motion)
     const int fbmOctaves = 5;
     const double fbmLacunarity = 2.0;
     const double fbmGain = 0.5;
     const unsigned int fbmNoiseSeed = (unsigned int)rand();
 
-    // Dimensions and scaling factors for noise sampling
     const double width = gb->boardWidth;
     const double height = gb->boardHeight;
     const double minDim = width < height ? width : height;
 
-    const double noiseScale = minDim / 5.6;       // Controls size of islands
-    const double edgeFalloffExponent = 2;         // Controls circular landscape fade-out
-    const double threshold = -0.04;               // Determines ice vs. water threshold
-    const double maxRandomJitter = 0.15;          // Adds randomness for natural shapes
+    const double noiseScale = minDim / 5.6;
+    const double edgeFalloffExponent = 2;
+    const double threshold = -0.04;
+    const double maxRandomJitter = 0.15;
 
-    int placeableFloe = 0; // Count tiles with exactly 1 fish (used in placement phase)
+    int placeableFloe = 0;
 
-    // Generate floating ice and fish distribution
     for (int y = 0; y < gb->boardHeight; y++) {
         const double noiseY = ((double)y - height * 0.5) / noiseScale;
         const double centeredOffsetY = ((double)y - height * 0.5) / (minDim * 0.5);
@@ -72,88 +92,77 @@ void Generate_Board(GameBoard *gb) {
             const double noiseX = ((double)x - width * 0.5) / noiseScale;
             const double centeredOffsetX = ((double)x - width * 0.5) / (minDim * 0.5);
 
-            // Apply FBM noise
-            const double noiseValue = Fbm(
-                noiseX, noiseY,
-                fbmOctaves,
-                fbmLacunarity,
-                fbmGain,
-                fbmNoiseSeed
-            );
+            const double noiseValue = Fbm(noiseX, noiseY, fbmOctaves, fbmLacunarity, fbmGain, fbmNoiseSeed);
 
-            // Distance from center → creates circular map shape
-            const double radialNorm =
-                sqrt(centeredOffsetX * centeredOffsetX + centeredOffsetY * centeredOffsetY);
-
+            const double radialNorm = sqrt(centeredOffsetX * centeredOffsetX + centeredOffsetY * centeredOffsetY);
             const double falloff = pow(radialNorm, edgeFalloffExponent);
 
-            // Random jitter to soften edges
             const double randomUnit = (double)rand() / (double)RAND_MAX;
             const double randomJitter = (randomUnit - 0.5) * maxRandomJitter;
 
-            // Final terrain value
             const double terrainValue = noiseValue - falloff + randomJitter;
 
-            // Determine whether a tile is floating
             floe->isFloating = (terrainValue > threshold) ? 1 : 0;
+            floe->fishCount = floe->isFloating ? rand() % MAX_FISH_COUNT + 1 : 0;
+            floe->occupantId = -1;
 
-            // Assign 1–MAX_FISH_COUNT fish if floating, otherwise 0
-            floe->fishCount =
-                floe->isFloating ? rand() % MAX_FISH_COUNT + 1 : 0;
-
-            floe->occupantId = -1; // No penguin on the tile initially
-
-            // Count single-fish floes for placement phase rules
             if (floe->fishCount == 1) {
                 placeableFloe += 1;
             }
         }
     }
-
-    // Save number of floes where penguins may be placed
     gb->placeableFloeCount = placeableFloe;
 }
 
+/**
+ * @brief Print the board in a human-readable ASCII format.
+ *
+ * The grid prints column headers, then each row. Occupied cells (occupantId != -1)
+ * print as "P#", floating cells show their fish count, water cells are 'X'.
+ *
+ * @param gb Pointer to GameBoard to print.
+ */
 void Print_Board(const GameBoard *gb) {
-    // Print column index header
     printf("   ");
     for (int x = 0; x < gb->boardWidth; x++) {
-        if (x < 10)
+        if (x<10)
             printf("  %d  ", x);
         else
             printf(" %3d ", x);
     }
     printf("\n");
-
-    // Print board contents row by row
     for (int y = 0; y < gb->boardHeight; y++) {
-        printf("%2d ", y); // Row index
-
+        printf("%2d ", y);
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
-
-            if (floe->occupantId != -1) {
-                printf("| P%d ", floe->occupantId + 1); // Penguin present
+            if (floe->occupantId != -1) // if occupied
+            {
+                printf("| P%d ", floe->occupantId + 1);
             }
-            else if (floe->isFloating) {
-                printf("| %d  ", floe->fishCount);       // Ice floe with fish
+            else if (floe->isFloating) //if not occupied, if ice floe
+            {
+                printf("| %d  ", floe->fishCount);
             }
-            else {
-                printf("| X  ");                          // Water tile
+            else // no ice floe
+            {
+                printf("| X  ");
             }
         }
-
         printf("| \n");
     }
 }
 
+/**
+ * @brief Free all memory used by the GameBoard.
+ *
+ * Frees each allocated row and then the row pointer array.
+ *
+ * @param gb Pointer to GameBoard to cleanup.
+ */
 void GameBoard_Cleanup(GameBoard *gb) {
-    // Free each row of the grid
     for (int i = 0; i < gb->boardHeight; i++) {
         free(gb->floeGrid[i]);
     }
-
-    // Free array of row pointers
     free(gb->floeGrid);
-    gb->floeGrid = nullptr; // Avoid dangling pointer
+    gb->floeGrid = NULL;
 }
