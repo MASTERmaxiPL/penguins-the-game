@@ -80,6 +80,8 @@ void GameManager_Init(GameManager *gm) {
     }
 
     printf("Game initialized!\n");
+
+    Print_Final_Scores(&gm->gb);
 }
 
 void GameManager_Run(GameManager *gm) {
@@ -93,5 +95,8 @@ void GameManager_Run(GameManager *gm) {
 
 void GameManager_Cleanup(GameManager *gm) {
     GameBoard_Cleanup(&gm->gb);
+    free(gm->playersScore);
+    gm->playersScore = NULL;
+
     printf("Game cleaned up!\n");
 }
