@@ -1,19 +1,22 @@
+/**
+ * @file movementPhase.c
+ * @brief Implements logic for checking available moves, validating movement,
+ *        executing penguin movement, and running the full movement phase loop.
+ */
+
 #include "movementPhase.h"
 #include "boardGenerator.h"
 
 #include <stdio.h>
 
 /**
- * @file movementPhase.c
- * @brief Movement phase implementation: turn loop, checking and executing moves.
- */
-
-/**
- * @brief Run the movement phase until no players can move.
+ * @brief Run the movement phase until all players are blocked.
  *
- * Uses a blocked counter to detect when all players are consecutively blocked.
+ * The phase proceeds in player order. Each player attempts a move; if a player
+ * has no valid moves, they are counted as blocked. When all players are
+ * consecutively blocked, the movement phase ends.
  *
- * @param gm Pointer to GameManager (const).
+ * @param gm Pointer to the GameManager (read-only).
  */
 void MovementPhase_Run(const GameManager *gm) {
     bool availableMoves = true;
@@ -38,13 +41,14 @@ void MovementPhase_Run(const GameManager *gm) {
 }
 
 /**
- * @brief Scan board for any penguin owned by current player that has a move.
+ * @brief Check whether a given player has *any* legal movement remaining.
  *
- * Returns true early when a valid move is detected.
+ * Iterates over all tiles, locating all penguins belonging to the player.
+ * For each penguin, checks whether it has possible movement directions.
  *
- * @param gb Pointer to GameBoard.
- * @param currentPlayerIndex Player index to check.
- * @return true if any move exists.
+ * @param gb Pointer to the GameBoard.
+ * @param currentPlayerIndex Index of the player to check.
+ * @return true if the player has at least one legal move.
  */
 bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerIndex) {
     bool availableMoves = false;
@@ -60,20 +64,23 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
 }
 
 /**
- * @brief Quick-check whether a penguin may move from the given position.
+ * @brief Quick heuristic to determine if a penguin may have any moves.
  *
- * This checks immediate neighbors for non-blocking occupancy. It is a
- * conservative, cheap test — detailed move validity is done in Is_Valid_Move.
+ * This does **not** fully validate moves — it only checks whether there is at
+ * least one adjacent tile not occupied by the same player. Full validation is
+ * handled by Is_Valid_Move().
  *
  * @param gb Pointer to GameBoard.
- * @param posX Column of penguin.
- * @param posY Row of penguin.
- * @param boardHeight Board height.
- * @param boardWidth Board width.
- * @param currentPlayerIndex Player index.
- * @return true if an adjacent tile suggests a possible move.
+ * @param posX Penguin X position.
+ * @param posY Penguin Y position.
+ * @param boardHeight Height of board.
+ * @param boardWidth Width of board.
+ * @param currentPlayerIndex Player owning the penguin.
+ * @return true if at least one possible move direction exists.
  */
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex) {
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY,
+                                 const int boardHeight, const int boardWidth,
+                                 const int currentPlayerIndex) {
     if (posX != 0)
         if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex)
             return true;
@@ -90,12 +97,17 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
 }
 
 /**
- * @brief Interactive movement turn for the given player.
+ * @brief Execute one movement turn for the specified player.
  *
- * Prompts for start coordinates and destination, validates and executes move.
+ * Prompts the user to:
+ *  - Select a penguin to move,
+ *  - Select a destination tile.
+ *
+ * The move is validated with Is_Valid_Move(). If legal, Move_Penguin() is
+ * executed and the updated board is displayed.
  *
  * @param gb Pointer to GameBoard.
- * @param currentPlayerIndex Player whose turn it is.
+ * @param currentPlayerIndex Index of the active player.
  */
 void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
     int startX, startY, endX, endY;
@@ -122,31 +134,66 @@ void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
 }
 
 /**
- * @brief Check that coordinates are inside the board bounds.
+ * @brief Check whether the given coordinates lie within the board.
  *
  * @param gb Pointer to GameBoard.
- * @param x X coordinate (column).
- * @param y Y coordinate (row).
- * @return true if within bounds.
+ * @param x X-coordinate to check.
+ * @param y Y-coordinate to check.
+ * @return true if (x,y) lies inside the board dimensions.
  */
 bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
 
 /**
- * @brief Validate a straight-line penguin move from start to end.
+ * @brief Execute a penguin move after validating it.
  *
- * Verifies bounds, presence of penguin at start, target is floating and free,
- * movement is axis-aligned, and every intermediate tile is floating and free.
+ * Transfers the penguin from the start tile to the target tile and removes
+ * the starting floe (making it water).
  *
  * @param gb Pointer to GameBoard.
- * @param startX Start X coordinate.
- * @param startY Start Y coordinate.
- * @param endX End X coordinate.
- * @param endY End Y coordinate.
- * @return true if the move is valid.
+ * @param startX Source X position.
+ * @param startY Source Y position.
+ * @param endX Destination X position.
+ * @param endY Destination Y position.
+ * @return true if the move was legal and executed successfully.
  */
-bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+bool Move_Penguin(const GameBoard *gb, const int startX, const int startY,
+                  const int endX, const int endY) {
+    if (!Is_Valid_Move(gb, startX, startY, endX, endY))
+        return false;
+
+    IceFloe *start = &gb->floeGrid[startY][startX];
+    IceFloe *target = &gb->floeGrid[endY][endX];
+
+    target->occupantId = start->occupantId;
+
+    start->isFloating = false;
+    start->fishCount = 0;
+    start->occupantId = -1;
+
+    return true;
+}
+
+/**
+ * @brief Validate a penguin movement from (startX,startY) to (endX,endY).
+ *
+ * Rules enforced:
+ *  - Both coordinates must be inside the board.
+ *  - Starting tile must have a penguin.
+ *  - Target must be floating and empty.
+ *  - Movement must be straight (horizontal or vertical).
+ *  - All tiles along the path must be floating and unoccupied.
+ *
+ * @param gb Pointer to GameBoard.
+ * @param startX Starting X coordinate.
+ * @param startY Starting Y coordinate.
+ * @param endX Ending X coordinate.
+ * @param endY Ending Y coordinate.
+ * @return true if the move is valid under all game rules.
+ */
+bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY,
+                   const int endX, const int endY) {
     if (!Is_Move_In_Bounds(gb, startX, startY) || !Is_Move_In_Bounds(gb, endX, endY))
         return false;
 
@@ -180,32 +227,6 @@ bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, cons
         currentX += stepX;
         currentY += stepY;
     }
-
-    return true;
-}
-
-/**
- * @brief Execute a validated penguin move: set target occupant and remove start floe.
- *
- * @param gb Pointer to GameBoard.
- * @param startX Start X coordinate.
- * @param startY Start Y coordinate.
- * @param endX End X coordinate.
- * @param endY End Y coordinate.
- * @return true if move succeeded.
- */
-bool Move_Penguin(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
-    if (!Is_Valid_Move(gb, startX, startY, endX, endY))
-        return false;
-
-    IceFloe *start = &gb->floeGrid[startY][startX];
-    IceFloe *target = &gb->floeGrid[endY][endX];
-
-    target->occupantId = start->occupantId;
-
-    start->isFloating = false;
-    start->fishCount = 0;
-    start->occupantId = -1;
 
     return true;
 }
