@@ -1,3 +1,13 @@
+/**
+ * @file boardGenerator.c
+ * @brief Implements board allocation, procedural generation using FBM noise,
+ *        ASCII printing, and cleanup routines for the penguin game.
+ *
+ * This module creates the ice floe board, assigns fish counts, determines
+ * floating vs. water tiles, and provides utilities for visualizing and freeing
+ * the board.
+ */
+
 #include "boardGenerator.h"
 #include "noise.h"
 
@@ -10,38 +20,39 @@
 #define MAX_FISH_COUNT 3
 
 /**
- * @file boardGenerator.c
- * @brief Implementation of GameBoard allocation, procedural generation and printing.
- */
-
-/**
- * @internal
- * @brief Initialize srand() once per program run.
+ * @brief Initialize the random number generator once.
  *
- * This function ensures the random sequence is seeded only once.
+ * Seeds `srand()` using system time and a stack address. This method ensures
+ * deterministic seeding only once, regardless of how many times the function
+ * is called.
+ *
+ * @note This function is internal to this translation unit.
  */
 static void Init_Random_Seed() {
     static int seeded = 0;
     if (!seeded) {
-        srand((unsigned int)time(NULL) ^ (unsigned int)(uintptr_t)&seeded);
+        srand((unsigned int)time(nullptr) ^ (unsigned int)(uintptr_t) &seeded);
         seeded = 1;
     }
 }
 
 /**
- * @brief Initialize GameBoard memory and generate contents.
+ * @brief Allocate and initialize the GameBoard structure.
  *
- * Allocates the floeGrid as an array of row pointers and individual rows,
- * then initializes the board via Generate_Board.
+ * Allocates the 2D dynamic array `floeGrid`, seeds randomness, and immediately
+ * calls Generate_Board() to fill in tile values.
  *
- * @param gb Pointer to GameBoard structure to initialize.
- * @param boardWidth Number of columns.
- * @param boardHeight Number of rows.
+ * @param gb Pointer to the GameBoard structure to initialize.
+ * @param boardWidth Width of the board in tiles.
+ * @param boardHeight Height of the board in tiles.
+ *
+ * @note Uses `nullptr` intentionally because the student code is written in
+ *       C++-compatible style.
  */
 void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) {
     gb->boardWidth = boardWidth;
     gb->boardHeight = boardHeight;
-    gb->floeGrid = NULL;
+    gb->floeGrid = nullptr;
 
     gb->floeGrid = malloc(boardHeight * sizeof(IceFloe *));
     for (int i = 0; i < boardHeight; i++) {
@@ -58,12 +69,17 @@ void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) 
 }
 
 /**
- * @brief Generate the procedural board layout.
+ * @brief Generate the board using FBM noise, radial falloff, and randomness.
  *
- * Uses FBM noise to compute a terrain value for each grid cell, applies a
- * radial falloff to make islands, and assigns fish counts and occupancy.
+ * Steps performed:
+ *  1. Compute FBM noise at each tile.
+ *  2. Apply radial falloff to shape the island.
+ *  3. Add a small random jitter.
+ *  4. Classify tile as floating or water.
+ *  5. Assign fish count (1–3) to floating tiles.
+ *  6. Count tiles containing exactly 1 fish (used for placement phase).
  *
- * @param gb Pointer to GameBoard to populate.
+ * @param gb Pointer to GameBoard that will be populated.
  */
 void Generate_Board(GameBoard *gb) {
     const int fbmOctaves = 5;
@@ -115,12 +131,14 @@ void Generate_Board(GameBoard *gb) {
 }
 
 /**
- * @brief Print the board in a human-readable ASCII format.
+ * @brief Print the entire board in an ASCII visual format.
  *
- * The grid prints column headers, then each row. Occupied cells (occupantId != -1)
- * print as "P#", floating cells show their fish count, water cells are 'X'.
+ * Displays coordinate headers and prints either:
+ *  - `"P#"` if the tile is occupied by a player's penguin,
+ *  - the number of fish on floating tiles,
+ *  - or `"X"` for water tiles.
  *
- * @param gb Pointer to GameBoard to print.
+ * @param gb Pointer to the GameBoard to print.
  */
 void Print_Board(const GameBoard *gb) {
     printf("   ");
@@ -153,16 +171,19 @@ void Print_Board(const GameBoard *gb) {
 }
 
 /**
- * @brief Free all memory used by the GameBoard.
+ * @brief Free all allocated memory associated with the GameBoard.
  *
- * Frees each allocated row and then the row pointer array.
+ * Frees each row of `floeGrid`, then frees the row pointer array itself.
  *
- * @param gb Pointer to GameBoard to cleanup.
+ * @param gb Pointer to GameBoard whose memory will be released.
+ *
+ * @note The caller is responsible for ensuring no more references exist to the
+ *       floeGrid after this call.
  */
 void GameBoard_Cleanup(GameBoard *gb) {
     for (int i = 0; i < gb->boardHeight; i++) {
         free(gb->floeGrid[i]);
     }
     free(gb->floeGrid);
-    gb->floeGrid = NULL;
+    gb->floeGrid = nullptr;
 }
