@@ -1,18 +1,21 @@
 #ifndef GAME_BOARD_H
 #define GAME_BOARD_H
 
-#include "iceFloe.h"   // Provides the definition of the IceFloe structure
+#include "iceFloe.h"
 
-// Represents the full game board used for the penguin game.
-// boardWidth         - number of columns in the board
-// boardHeight        - number of rows in the board
-// placeableFloeCount - number of tiles with exactly 1 fish (used to determine penguin limits)
-// floeGrid           - dynamically allocated 2D array storing IceFloe tiles
+/**
+ * @file gameBoard.h
+ * @brief Container for the game's grid of IceFloe cells.
+ *
+ * The GameBoard stores board dimensions, a count of placeable floes (1-fish floes),
+ * and a 2D grid of IceFloe structures (row-major: floeGrid[row][column]).
+ */
+
 typedef struct {
-    int boardWidth;          // Width of the board
-    int boardHeight;         // Height of the board
-    int placeableFloeCount;  // Number of ice floes with exactly 1 fish
-    IceFloe **floeGrid;      // Pointer to 2D grid of IceFloe structures
+    int boardWidth;         /**< width in columns */
+    int boardHeight;        /**< height in rows */
+    int placeableFloeCount; /**< count of tiles eligible for initial placement */
+    IceFloe **floeGrid;     /**< 2D array: floeGrid[row][col] */
 } GameBoard;
 
 #endif
