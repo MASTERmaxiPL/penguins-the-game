@@ -1,25 +1,45 @@
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
 
-#include "gameBoard.h"   // Provides the GameBoard structure used inside GameManager
+#include "gameBoard.h"
 
-// Stores all global data needed to run the game.
-// Controls initialization, game flow, and cleanup.
+/**
+ * @file gameManager.h
+ * @brief High-level manager that owns game state and orchestrates phases.
+ *
+ * GameManager stores the board and player-related settings and provides
+ * lifecycle functions: Init, Run and Cleanup.
+ */
+
 typedef struct {
-    GameBoard gb;            // The main game board
-    int numOfPlayers;        // Total number of players
-    int *playersScore;       // Dynamically allocated array storing player scores
-    int penguinsPerPlayer;   // Number of penguins assigned to each player
-    bool isRunning;          // Indicates whether the game loop should continue
+    GameBoard gb;        /**< the game board */
+    int numOfPlayers;    /**< number of players (>1) */
+    int *playersScore;   /**< dynamically allocated array length numOfPlayers */
+    int penguinsPerPlayer; /**< number of penguins per player */
+    bool isRunning;      /**< running flag used by GameManager_Run */
 } GameManager;
 
-// Initializes game settings, allocates memory, and prepares the playing board.
+/**
+ * @brief Initialize a GameManager, prompt user for settings and allocate resources.
+ *
+ * @param gm Pointer to GameManager to initialize.
+ */
 void GameManager_Init(GameManager *gm);
 
-// Executes the gameplay loop (placement phase → movement phase).
+/**
+ * @brief Run the game loop: placement and movement phases.
+ *
+ * @param gm Pointer to GameManager to run.
+ */
 void GameManager_Run(GameManager *gm);
 
-// Frees memory and resets game state after a finished session.
+/**
+ * @brief Cleanup resources allocated by the GameManager.
+ *
+ * Frees board resources; note playersScore should be freed here as well.
+ *
+ * @param gm Pointer to GameManager to cleanup.
+ */
 void GameManager_Cleanup(GameManager *gm);
 
 #endif
