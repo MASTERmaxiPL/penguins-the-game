@@ -1,41 +1,55 @@
 #ifndef PLACEMENT_PHASE_H
 #define PLACEMENT_PHASE_H
 
+#include "gameBoard.h"
 #include "gameManager.h"
 
 /**
  * @file placementPhase.h
- * @brief Placement phase APIs for initial penguin placement.
+ * @brief Declares functions responsible for the placement phase of the game.
+ *
+ * During the placement phase, players place their penguins on valid tiles
+ * (floating, unoccupied, 1-fish floes) and collect initial fish.
  */
 
 /**
- * @brief Run the placement phase for all players.
+ * @brief Run the complete placement phase.
  *
- * Players take turns placing penguins on floes that have exactly 1 fish.
+ * Handles multiple rounds of placement—each player places one penguin per
+ * round until they have placed the required number.
  *
- * @param gm Pointer to GameManager that stores board and scores.
+ * @param gm Pointer to the GameManager controlling the game.
  */
 void PlacementPhase_Run(GameManager *gm);
 
 /**
- * @brief Handle a single player's placement turn (interactive).
+ * @brief Place a penguin on the selected floe and award fish to the player.
  *
- * Prompts the player for coordinates, validates, and places the penguin.
+ * Updates:
+ *  - The floe's occupant ID,
+ *  - The player's accumulated fish,
+ *  - Outputs a message describing the action.
  *
- * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the player placing.
+ * @param playerIndex Index of the player placing the penguin.
+ * @param players Pointer to the players' score array.
+ * @param floe Pointer to the target IceFloe.
+ * @param x X-coordinate of the placement.
+ * @param y Y-coordinate of the placement.
  */
-void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex);
+void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y);
 
 /**
- * @brief Apply placement: assign occupant and update player score.
+ * @brief Handle interaction for a single player's placement turn.
  *
- * @param playerIndex Index of player placing.
- * @param players Array of player scores (length numOfPlayers).
- * @param floe Pointer to target IceFloe.
- * @param x X coordinate of floe.
- * @param y Y coordinate of floe.
+ * Continuously prompts for coordinates until a valid tile is chosen:
+ *  - Must be within bounds,
+ *  - Must be floating,
+ *  - Must contain exactly 1 fish,
+ *  - Must be unoccupied.
+ *
+ * @param gm Pointer to the GameManager.
+ * @param currentPlayerIndex Index of the player whose turn it is.
  */
-void Player_Place(const int playerIndex, int *players, IceFloe *floe, const int x, const int y);
+void Player_Placement_Turn(GameManager *gm, int currentPlayerIndex);
 
 #endif
