@@ -3,73 +3,74 @@
 
 #include <stdio.h>
 
-// Runs the entire placement phase where each player places all penguins.
+/**
+ * @file placementPhase.c
+ * @brief Implementation of the placement phase where players place penguins.
+ */
+
+/**
+ * @brief Run placement rounds until each player has placed all penguins.
+ *
+ * @param gm Pointer to GameManager with game settings and board.
+ */
 void PlacementPhase_Run(GameManager *gm) {
-    printf("Placement Phase\n");
-
-    // Loop through placement turns (each player places one penguin per turn)
-    for (int turn = 1; turn < gm->penguinsPerPlayer + 1; turn++) {
-        printf("Turn %d\n", turn);
-
-        // Players take turns placing their penguins
-        for (int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
-            Print_Board(&gm->gb);                    // Display board before each placement
-            Player_Placement_Turn(gm, currentPlayerIndex);  // Handle placement for current player
+    for (int r = 0; r < gm->penguinsPerPlayer; r++) {
+        for (int p = 0; p < gm->numOfPlayers; p++) {
+            Player_Placement_Turn(gm, p);
         }
     }
 
-    printf("Placement Phase finished successfully!\n");
-    Print_Board(&gm->gb);   // Show final board state after placement phase
+    Print_Board(&gm->gb);
 
-    // Display how many fish each player collected during placement
-    for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf("Player %d has %d fish after placement phase.\n",
-               i + 1, gm->playersScore[i]);
+    printf("Placement phase finished. Scores:\n");
+    for (int i = 0; i < gm->numOfPlayers; ++i) {
+        printf("Player %d: %d\n", i + 1, gm->playersScore[i]);
     }
 }
 
-// Handles a single player's input and validates penguin placement.
+/**
+ * @brief Execute a single player's placement turn (interactive).
+ *
+ * Validates selected floe is floating, unoccupied and has exactly 1 fish.
+ *
+ * @param gm Pointer to GameManager.
+ * @param currentPlayerIndex Index of the player placing.
+ */
 void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex) {
     int x, y;
-
-    while (1) {
-        printf("Player %d, put your x y coordinates:\n", currentPlayerIndex + 1);
-
-        const int inputCount = scanf("%d %d", &x, &y);
-
-        // Check if two integers were provided
-        if (inputCount != 2) {
-            printf("Invalid input! Please enter two integers.\n");
-            while (getchar() != '\n'){}  // Clear buffer
-            continue;
-        }
-
-        // Check board bounds
-        if (x >= gm->gb.boardWidth || y >= gm->gb.boardHeight || x < 0 || y < 0) {
-            printf("Your coordinates are out of bounds!\n");
-            continue;
-        }
-
-        IceFloe *floe = &gm->gb.floeGrid[y][x];
-
-        // Valid tile must be floating, unoccupied, AND contain exactly 1 fish
-        if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
-            Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
-            break;
-        }
-
-        printf("You cannot place your penguin here. Try again! (%d,%d)!\n", x, y);
+    printf("Player %d, choose a floe to place (x y) on a floe with 1 fish: ", currentPlayerIndex + 1);
+    if (scanf("%d %d", &x, &y) != 2) {
+        printf("Invalid input\n");
+        while (getchar() != '\n') {}
+        return;
     }
+
+    if (!Is_Move_In_Bounds(&gm->gb, x, y) ||
+        !gm->gb.floeGrid[y][x].isFloating ||
+        gm->gb.floeGrid[y][x].occupantId != -1 ||
+        gm->gb.floeGrid[y][x].fishCount != 1) {
+        printf("Invalid placement. Must be a floating, unoccupied floe with 1 fish.\n");
+        return;
+    }
+
+    Player_Place(currentPlayerIndex, gm->playersScore, &gm->gb.floeGrid[y][x], x, y);
 }
 
-// Places penguin on a selected tile and rewards the player with fish.
+/**
+ * @brief Place a penguin for a player onto the given floe and update score.
+ *
+ * Adds the floe's fishCount to the player's score and marks occupant. Recommended
+ * to set floe->fishCount to 0 to reflect collected fish.
+ *
+ * @param playerIndex Player placing (0-based).
+ * @param players Array of player scores.
+ * @param floe Pointer to target IceFloe.
+ * @param x X coordinate.
+ * @param y Y coordinate.
+ */
 void Player_Place(const int playerIndex, int *players, IceFloe *floe, const int x, const int y) {
-    floe->occupantId = playerIndex;              // Assign penguin to the tile
-    players[playerIndex] += floe->fishCount;     // Add collected fish to player's score
-
-    printf(
-        "Current Player placed his penguin on (%d,%d) and obtained %d fish. "
-        "Now has %d fish.\n",
-        x, y, floe->fishCount, players[playerIndex]
-    );
+    players[playerIndex] += floe->fishCount;
+    floe->occupantId = playerIndex;
+    /* Recommended: floe->fishCount = 0; */
+    printf("Player %d placed a penguin at (%d,%d) and collected %d fish.\n", playerIndex + 1, x, y, players[playerIndex]);
 }
