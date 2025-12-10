@@ -1,20 +1,25 @@
+/**
+ * @file main.c
+ * @brief Entry point for the penguin game application.
+ *
+ * This file contains the main loop that:
+ *  - Initializes the game,
+ *  - Runs all game phases,
+ *  - Cleans up allocated resources,
+ *  - And allows the user to replay the game if desired.
+ */
+
 #include <stdio.h>
 #include "gameManager.h"
 
 /**
- * @file main.c
- * @brief Program entry point and top-level game loop.
- *
- * Repeatedly initializes GameManager, runs a game session, cleans up, and asks
- * the user whether to play again.
- */
-
-/**
  * @brief Program entry point.
  *
- * Initializes a GameManager and runs the game loop until the user declines to play again.
+ * Creates a GameManager instance, runs a complete game session, and repeatedly
+ * offers the player the option to start a new session. The loop terminates
+ * when the user chooses not to continue.
  *
- * @return 0 on success.
+ * @return Returns 0 upon successful execution.
  */
 int main() {
     GameManager game;
@@ -24,18 +29,22 @@ int main() {
         char input;
         printf("Welcome to penguin game!\n");
         printf("Initiating...\n");
+
         GameManager_Init(&game);
+
         printf("Trying to run...\n");
         GameManager_Run(&game);
+
         printf("Game finished, cleaning...\n");
         GameManager_Cleanup(&game);
 
         printf("Do you want to play again? (print 'y' to continue, else program finishes)\n");
         scanf(" %c", &input);
+
         if (input != 'y' && input != 'Y')
             session_active = false;
-    }
-    while (session_active);
+
+    } while (session_active);
 
     printf("Game Closed!");
     return 0;
