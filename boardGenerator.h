@@ -5,49 +5,53 @@
 
 /**
  * @file boardGenerator.h
- * @brief Board allocation, generation and printing utilities.
+ * @brief Declarations for board creation, procedural generation, printing,
+ *        and cleanup routines used in the penguin game.
  *
- * Functions to initialize and cleanup the GameBoard, generate the procedural
- * ice floe layout using FBM noise, and print the board to stdout.
+ * This module manages the life cycle of the GameBoard: allocation,
+ * generating floating tiles and fish values, rendering the board, and freeing
+ * all associated memory.
  */
 
 /**
- * @brief Initialize a GameBoard with given width and height.
+ * @brief Allocate and initialize the GameBoard structure.
  *
- * This allocates the 2D floeGrid and calls Generate_Board to fill it.
+ * Allocates the 2D array of IceFloe rows and columns and then calls
+ * Generate_Board() to populate the board with floating tiles and fish counts.
  *
- * @param gb Pointer to GameBoard to initialize.
- * @param boardWidth Number of columns.
- * @param boardHeight Number of rows.
+ * @param gb Pointer to the GameBoard to initialize.
+ * @param boardWidth Width of the board in tiles.
+ * @param boardHeight Height of the board in tiles.
  */
 void GameBoard_Init(GameBoard *gb, int boardWidth, int boardHeight);
 
 /**
- * @brief Generate the board contents for an already-allocated GameBoard.
+ * @brief Procedurally generate the ice board layout.
  *
- * Uses FBM noise from noise.c to determine which cells are floating floes,
- * assigns fishCount (1..3) to floes, and sets occupantId = -1.
+ * Uses FBM noise, radial falloff, and random jitter to determine whether
+ * tiles are floating or water. Assigns fish counts and tracks tiles with
+ * exactly one fish for the placement phase.
  *
- * @param gb Pointer to GameBoard to populate.
+ * @param gb Pointer to the GameBoard to populate.
  */
 void Generate_Board(GameBoard *gb);
 
 /**
- * @brief Print an ASCII representation of the board to stdout.
+ * @brief Print the board as an ASCII grid.
  *
- * Occupied tiles print as "| Pn ", floating unoccupied as "| f  ",
- * and water as "| X  ".
+ * Floating tiles display their fish count, occupied tiles display the player
+ * number, and water tiles display 'X'.
  *
  * @param gb Pointer to the GameBoard to print.
  */
 void Print_Board(const GameBoard *gb);
 
 /**
- * @brief Free memory associated with a GameBoard.
+ * @brief Free all memory associated with the GameBoard.
  *
- * Frees internal allocations and sets floeGrid to NULL.
+ * Releases each allocated row and the parent pointer array.
  *
- * @param gb Pointer to GameBoard to cleanup.
+ * @param gb Pointer to the GameBoard to clean up.
  */
 void GameBoard_Cleanup(GameBoard *gb);
 
