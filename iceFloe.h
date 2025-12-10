@@ -3,16 +3,23 @@
 
 /**
  * @file iceFloe.h
- * @brief Representation of a single ice floe tile on the board.
+ * @brief Defines the IceFloe structure, representing a single tile on the board.
  *
- * Each IceFloe indicates whether it exists (isFloating), how many fish it has,
- * and which player (if any) occupies it.
+ * An IceFloe can be either floating (usable), or water (non-floating).
+ * A floating floe may contain fish and optionally a penguin belonging to a player.
  */
 
+/**
+ * @struct IceFloe
+ * @brief Represents a single ice tile in the game grid.
+ *
+ * Each tile stores whether it exists, how many fish it contains,
+ * and whether a player's penguin occupies it.
+ */
 typedef struct {
-    bool isFloating; /**< true when there is an ice floe at this cell */
-    int fishCount;   /**< number of fish currently on this floe (0..3) */
-    int occupantId;  /**< -1 if empty; otherwise player index (0..n-1) */
+    bool isFloating; /**< Whether this tile is a floating ice floe (true) or water (false). */
+    int fishCount;   /**< Number of fish currently present (0–3 depending on generation rules). */
+    int occupantId;  /**< Player index occupying the tile, or -1 if unoccupied. */
 } IceFloe;
 
 #endif
