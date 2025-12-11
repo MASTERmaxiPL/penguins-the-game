@@ -12,6 +12,8 @@
 #define minHeight 10
 #define maxHeight 30
 
+static void Print_Final_Scores(const GameManager *gm);
+
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
@@ -87,6 +89,7 @@ void GameManager_Run(GameManager *gm) {
     while (gm->isRunning) {
         PlacementPhase_Run(gm);
         MovementPhase_Run(gm);
+        Print_Final_Scores(gm);
         gm->isRunning=false;
     }
 }
@@ -97,4 +100,24 @@ void GameManager_Cleanup(GameManager *gm) {
     gm->playersScore = NULL;
 
     printf("Game cleaned up!\n");
+}
+
+static void Print_Final_Scores(const GameManager *gm) {
+    printf("\n============================\n");
+    printf("         FINAL SCORES       \n");
+    printf("============================\n");
+
+    for (int i = 0; i < gm->numOfPlayers; i++) {
+        printf("Player %d: %d points\n", i + 1, gm->playersScore[i]);
+    }
+
+    int best = 0;
+    for (int i = 1; i < gm->numOfPlayers; i++) {
+        if (gm->playersScore[i] > gm->playersScore[best]){
+            best = i;
+        }
+    }
+
+    printf("Winner: Player %d!\n", best + 1);
+    printf("============================\n\n");
 }

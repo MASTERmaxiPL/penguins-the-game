@@ -12,6 +12,5 @@ bool Is_Move_In_Bounds(const GameBoard *gb, int x, int y);
 bool Is_Valid_Move(const GameBoard *gb, int startX, int startY, int endX, int endY);
 bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY);
 void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex);
-void Print_Final_Scores(const GameManager *gm);
 
 #endif

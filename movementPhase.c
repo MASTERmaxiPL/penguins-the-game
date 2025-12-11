@@ -30,15 +30,12 @@ void MovementPhase_Run(GameManager *gm) {
 
         if (blocked_counter == gm->numOfPlayers) {
             printf("\nNo players have any moves left. Game ends!\n");
-            Print_Final_Scores(gm);
             availableMoves = false;
             break;
         }
 
         // Only let the player move if they have a valid move
-        if (hasMoves) {
-            Player_Movement_Turn(gm, currentPlayerIndex);
-        } else {
+        if (!hasMoves) {
             printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
         }
 
@@ -179,24 +176,4 @@ bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, cons
     }
 
     return true;
-}
-
-void Print_Final_Scores(const GameManager *gm) {
-    printf("\n============================\n");
-    printf("         FINAL SCORES       \n");
-    printf("============================\n");
-
-    for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf("Player %d: %d points\n", i + 1, gm->playersScore[i]);
-    }
-
-    int best = 0;
-    for (int i = 1; i < gm->numOfPlayers; i++) {
-        if (gm->playersScore[i] > gm->playersScore[best]){
-            best = i;
-        }
-    }
-
-    printf("Winner: Player %d!\n", best + 1);
-    printf("============================\n\n");
 }
