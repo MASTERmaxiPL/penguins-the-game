@@ -53,16 +53,16 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
 bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex)
 {
     if (posX != 0)
-        if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex && gb->floeGrid[posY][posX-1].isFloating)
+        if (gb->floeGrid[posY][posX-1].occupantId ==-1 && gb->floeGrid[posY][posX-1].isFloating)
             return true;
     if (posY != 0)
-        if (gb->floeGrid[posY-1][posX].occupantId != currentPlayerIndex && gb->floeGrid[posY-1][posX].isFloating)
+        if (gb->floeGrid[posY-1][posX].occupantId ==-1 && gb->floeGrid[posY-1][posX].isFloating)
             return true;
     if (posX != boardWidth-1)
-        if (gb->floeGrid[posX+1][posY].occupantId != currentPlayerIndex && gb->floeGrid[posX+1][posY].isFloating)
+        if (gb->floeGrid[posX+1][posY].occupantId ==-1 && gb->floeGrid[posX+1][posY].isFloating)
             return true;
     if (posY != boardHeight-1)
-        if (gb->floeGrid[posX][posY+1].occupantId != currentPlayerIndex && gb->floeGrid[posX][posY+1].isFloating)
+        if (gb->floeGrid[posX][posY+1].occupantId ==-1 && gb->floeGrid[posX][posY+1].isFloating)
             return true;
     return false;
 }
