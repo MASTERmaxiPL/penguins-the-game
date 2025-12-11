@@ -37,7 +37,6 @@ void MovementPhase_Run(GameManager *gm) {
 
 }
 
-
 bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerIndex) {
     bool availableMoves = false;
     for (int i = 0; i < gb->boardHeight; i++) {
