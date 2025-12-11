@@ -42,7 +42,7 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     for (int i = 0; i < gb->boardHeight; i++) {
         for (int j = 0; j < gb->boardWidth; j++) {
             if (gb->floeGrid[i][j].occupantId == currentPlayerIndex)
-                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth);
+                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth, currentPlayerIndex);
             if (availableMoves)
                 return availableMoves;
         }
@@ -50,31 +50,26 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     return availableMoves;
 }
 
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth)
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex)
 {
-    const int dirX[4] = { -1, 1, 0, 0 };
-    const int dirY[4] = { 0, 0, -1, 1 };
-
-    for (int d = 0; d < 4; d++) {
-        int x = posX + dirX[d];
-        int y = posY + dirY[d];
-
-        while (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight) {
-            const IceFloe *f = &gb->floeGrid[y][x];
-
-            if (!f->isFloating) break;
-            if (f->occupantId != -1) break;
-
+    if (posX != 0)
+        if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex && gb->floeGrid[posY][posX-1].isFloating)
             return true;
-        }
-    }
+    if (posY != 0)
+        if (gb->floeGrid[posY-1][posX].occupantId != currentPlayerIndex && gb->floeGrid[posY-1][posX].isFloating)
+            return true;
+    if (posX != boardWidth-1)
+        if (gb->floeGrid[posX+1][posY].occupantId != currentPlayerIndex && gb->floeGrid[posX+1][posY].isFloating)
+            return true;
+    if (posY != boardHeight-1)
+        if (gb->floeGrid[posX][posY+1].occupantId != currentPlayerIndex && gb->floeGrid[posX][posY+1].isFloating)
+            return true;
     return false;
 }
 
-
 void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
 
-    GameBoard *gb = &gm->gb;
+    const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
 
     while(1){
@@ -85,7 +80,7 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
         {
             printf("Invalid penguin.\n");
-            continue;
+            break;
         }
 
         printf("Choose destination (x y): ");
@@ -95,9 +90,8 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             printf("Move successful!\n");
             Print_Board(gb);
             break;
-        } else {
-            printf("Invalid move.\n");
         }
+        printf("Invalid move.\n");
     }
 }
 
@@ -107,7 +101,7 @@ bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
 
 bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int endX, const int endY) {
 
-    GameBoard *gb = &gm->gb;
+    const GameBoard *gb = &gm->gb;
 
     const int playerId = gb->floeGrid[startY][startX].occupantId;
     if (playerId == -1) return false;
