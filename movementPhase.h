@@ -20,7 +20,7 @@
  *
  * @param gm Pointer to the GameManager controlling the game.
  */
-void MovementPhase_Run(const GameManager *gm);
+void MovementPhase_Run(GameManager *gm);
 
 /**
  * @brief Determine whether a given player has at least one legal move available.
@@ -94,7 +94,7 @@ bool Is_Valid_Move(const GameBoard *gb, int startX, int startY, int endX, int en
  * @param endY End Y coordinate.
  * @return true if the move is completed successfully.
  */
-bool Move_Penguin(const GameBoard *gb, int startX, int startY, int endX, int endY);
+bool Move_Penguin(GameBoard *gb, int startX, int startY, int endX, int endY);
 
 /**
  * @brief Prompt the player to choose a penguin and destination, then attempt the move.
@@ -104,6 +104,6 @@ bool Move_Penguin(const GameBoard *gb, int startX, int startY, int endX, int end
  * @param gb Pointer to GameBoard.
  * @param currentPlayerIndex Index of the active player.
  */
-void Player_Movement_Turn(const GameBoard *gb, int currentPlayerIndex);
+void Player_Movement_Turn(GameBoard *gb, int currentPlayerIndex);
 
 #endif

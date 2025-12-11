@@ -18,26 +18,38 @@
  *
  * @param gm Pointer to the GameManager (read-only).
  */
-void MovementPhase_Run(const GameManager *gm) {
+void MovementPhase_Run(GameManager *gm) {
     bool availableMoves = true;
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
+    int roundCounter = 1;
 
-    do{
-        currentPlayerIndex+=1;
-        if (currentPlayerIndex >= gm->numOfPlayers)
+    printf("\n===== ROUND %d =====\n", roundCounter);
+
+    do {
+        currentPlayerIndex++;
+
+        if (currentPlayerIndex >= gm->numOfPlayers) {
             currentPlayerIndex = 0;
-
-        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex))
-            blocked_counter++;
-        else {
-            blocked_counter = 0;
+            roundCounter++;
+            printf("\n===== ROUND %d =====\n", roundCounter);
         }
-        if (blocked_counter == gm->numOfPlayers)
-            availableMoves = false;
 
-        Player_Movement_Turn(&gm->gb, currentPlayerIndex);
-    } while(availableMoves);
+        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
+            blocked_counter++;
+            printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
+        } else {
+            blocked_counter = 0;
+            Player_Movement_Turn(gm, currentPlayerIndex);
+        }
+
+        if (blocked_counter == gm->numOfPlayers) {
+            printf("\nNo players have any moves left. Game ends!\n");
+            availableMoves = false;
+            break;
+        }
+    } while (availableMoves);
+
 }
 
 /**
@@ -78,20 +90,19 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
  * @param currentPlayerIndex Player owning the penguin.
  * @return true if at least one possible move direction exists.
  */
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY,
-                                 const int boardHeight, const int boardWidth,
-                                 const int currentPlayerIndex) {
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex)
+{
     if (posX != 0)
-        if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex)
+        if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex && gb->floeGrid[posY][posX-1].isFloating)
             return true;
     if (posY != 0)
-        if (gb->floeGrid[posY-1][posX].occupantId != currentPlayerIndex)
+        if (gb->floeGrid[posY-1][posX].occupantId != currentPlayerIndex && gb->floeGrid[posY-1][posX].isFloating)
             return true;
     if (posX != boardWidth-1)
-        if (gb->floeGrid[posX+1][posY].occupantId != currentPlayerIndex)
+        if (gb->floeGrid[posX+1][posY].occupantId != currentPlayerIndex && gb->floeGrid[posX+1][posY].isFloating)
             return true;
     if (posY != boardHeight-1)
-        if (gb->floeGrid[posX][posY+1].occupantId != currentPlayerIndex)
+        if (gb->floeGrid[posX][posY+1].occupantId != currentPlayerIndex && gb->floeGrid[posX][posY+1].isFloating)
             return true;
     return false;
 }
@@ -109,26 +120,36 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
  * @param gb Pointer to GameBoard.
  * @param currentPlayerIndex Index of the active player.
  */
-void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
+void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
+    const GameBoard *gb = &gm->gb;
+
     int startX, startY, endX, endY;
 
-    printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
-    scanf("%d %d", &startX, &startY);
+    while(1){
+        printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
+        const int inputCount = scanf("%d %d", &startX, &startY);
 
-    if (!Is_Move_In_Bounds(gb, startX, startY) ||
-        gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
-    {
-        printf("Invalid penguin.\n");
-        return;
-    }
+        if (inputCount != 2) {
+            printf("Invalid input! Please enter two integers.\n");
+            while (getchar() != '\n'){}
+            continue;
+        }
 
-    printf("Choose destination (x y): ");
-    scanf("%d %d", &endX, &endY);
+        if (!Is_Move_In_Bounds(gb, startX, startY) ||
+            gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
+        {
+            printf("Invalid penguin.\n");
+            break;
+        }
 
-    if (Move_Penguin(gb, startX, startY, endX, endY)) {
-        printf("Move successful!\n");
-        Print_Board(gb);
-    } else {
+        printf("Choose destination (x y): ");
+        scanf("%d %d", &endX, &endY);
+
+        if (Move_Penguin(gm, startX, startY, endX, endY)) {
+            printf("Move successful!\n");
+            Print_Board(gb);
+            break;
+        }
         printf("Invalid move.\n");
     }
 }
@@ -158,18 +179,26 @@ bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
  * @param endY Destination Y position.
  * @return true if the move was legal and executed successfully.
  */
-bool Move_Penguin(const GameBoard *gb, const int startX, const int startY,
-                  const int endX, const int endY) {
+bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int endX, const int endY) {
+    const GameBoard *gb = &gm->gb;
+
+    const int playerId = gb->floeGrid[startY][startX].occupantId;
+    if (playerId == -1) return false;
+    
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
 
-    IceFloe *start = &gb->floeGrid[startY][startX];
+    IceFloe *start  = &gb->floeGrid[startY][startX];
     IceFloe *target = &gb->floeGrid[endY][endX];
 
-    target->occupantId = start->occupantId;
+    const int collectedFish = target->fishCount;
+    gm->playersScore[playerId] += collectedFish;
+
+    printf("Player %d gains %d fish! Total = %d\n", playerId + 1, collectedFish, gm->playersScore[playerId]);
+
+    target->occupantId = playerId;
 
     start->isFloating = false;
-    start->fishCount = 0;
     start->occupantId = -1;
 
     return true;
@@ -192,8 +221,7 @@ bool Move_Penguin(const GameBoard *gb, const int startX, const int startY,
  * @param endY Ending Y coordinate.
  * @return true if the move is valid under all game rules.
  */
-bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY,
-                   const int endX, const int endY) {
+bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
     if (!Is_Move_In_Bounds(gb, startX, startY) || !Is_Move_In_Bounds(gb, endX, endY))
         return false;
 
