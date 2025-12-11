@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void MovementPhase_Run(const GameManager *gm) {
+void MovementPhase_Run(GameManager *gm) {
     bool availableMoves = true;
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
@@ -25,6 +25,7 @@ void MovementPhase_Run(const GameManager *gm) {
             printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
         } else {
             blocked_counter = 0;
+            Player_Movement_Turn(gm, currentPlayerIndex);
         }
 
         if (blocked_counter == gm->numOfPlayers) {
@@ -33,6 +34,7 @@ void MovementPhase_Run(const GameManager *gm) {
             break;
         }
     } while (availableMoves);
+
 }
 
 
@@ -41,7 +43,7 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     for (int i = 0; i < gb->boardHeight; i++) {
         for (int j = 0; j < gb->boardWidth; j++) {
             if (gb->floeGrid[i][j].occupantId == currentPlayerIndex)
-                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth, currentPlayerIndex);
+                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth);
             if (availableMoves)
                 return availableMoves;
         }
@@ -49,7 +51,7 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     return availableMoves;
 }
 
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, int posX, int posY, int boardHeight, int boardWidth, int currentPlayerIndex)
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth)
 {
     const int dirX[4] = { -1, 1, 0, 0 };
     const int dirY[4] = { 0, 0, -1, 1 };
@@ -71,7 +73,7 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, int posX, int posY, int bo
 }
 
 
-void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex) {
+void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
 
     GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
@@ -104,7 +106,7 @@ bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
 
-bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY) {
+bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int endX, const int endY) {
 
     GameBoard *gb = &gm->gb;
 
