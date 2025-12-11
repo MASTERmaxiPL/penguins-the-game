@@ -74,7 +74,13 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
 
     while(1){
         printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
-        scanf("%d %d", &startX, &startY);
+        const int inputCount = scanf("%d %d", &startX, &startY);
+
+        if (inputCount != 2) {
+            printf("Invalid input! Please enter two integers.\n");
+            while (getchar() != '\n'){}
+            continue;
+        }
 
         if (!Is_Move_In_Bounds(gb, startX, startY) ||
             gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
