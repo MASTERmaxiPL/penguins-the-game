@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void MovementPhase_Run(GameManager *gm) {
+void MovementPhase_Run(const GameManager *gm) {
     bool availableMoves = true;
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
@@ -20,10 +20,9 @@ void MovementPhase_Run(GameManager *gm) {
             printf("\n===== ROUND %d =====\n", roundCounter);
         }
 
-        bool hasMoves = Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex);
-
-        if (!hasMoves) {
+        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
             blocked_counter++;
+            printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
         } else {
             blocked_counter = 0;
         }
@@ -33,12 +32,6 @@ void MovementPhase_Run(GameManager *gm) {
             availableMoves = false;
             break;
         }
-
-        // Only let the player move if they have a valid move
-        if (!hasMoves) {
-            printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
-        }
-
     } while (availableMoves);
 }
 
@@ -115,7 +108,7 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY) {
 
     GameBoard *gb = &gm->gb;
 
-    int playerId = gb->floeGrid[startY][startX].occupantId;
+    const int playerId = gb->floeGrid[startY][startX].occupantId;
     if (playerId == -1) return false;
 
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
@@ -124,7 +117,7 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY) {
     IceFloe *start  = &gb->floeGrid[startY][startX];
     IceFloe *target = &gb->floeGrid[endY][endX];
 
-    int collectedFish = target->fishCount;
+    const int collectedFish = target->fishCount;
     gm->playersScore[playerId] += collectedFish;
 
     printf("Player %d gains %d fish! Total = %d\n", playerId + 1, collectedFish, gm->playersScore[playerId]);
@@ -132,9 +125,7 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY) {
     target->occupantId = playerId;
 
     start->isFloating = false;
-    start->fishCount = 0;
     start->occupantId = -1;
-    target->fishCount = 0;
 
     return true;
 }
