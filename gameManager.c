@@ -80,8 +80,6 @@ void GameManager_Init(GameManager *gm) {
     }
 
     printf("Game initialized!\n");
-
-    Print_Final_Scores(gm);
 }
 
 void GameManager_Run(GameManager *gm) {
