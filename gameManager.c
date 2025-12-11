@@ -1,3 +1,12 @@
+/**
+ * @file gameManager.c
+ * @brief Handles overall game lifecycle: initialization, running main phases,
+ *        and cleanup at the end of the game.
+ *
+ * This module prompts the user for game settings, initializes the board,
+ * manages the placement and movement phases, and shuts down the game cleanly.
+ */
+
 #include "gameManager.h"
 #include "boardGenerator.h"
 #include "placementPhase.h"
@@ -12,6 +21,18 @@
 #define minHeight 10
 #define maxHeight 30
 
+/**
+ * @brief Initialize the GameManager and all required game parameters.
+ *
+ * Performs the following:
+ *  - Prompts the user for the number of players.
+ *  - Prompts for valid board width/height.
+ *  - Initializes the GameBoard.
+ *  - Allocates per-player score storage.
+ *  - Determines legal number of penguins per player.
+ *
+ * @param gm Pointer to the GameManager instance to initialize.
+ */
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
@@ -82,6 +103,14 @@ void GameManager_Init(GameManager *gm) {
     printf("Game initialized!\n");
 }
 
+/**
+ * @brief Run the game by executing placement and movement phases.
+ *
+ * The game runs while `gm->isRunning` is true.
+ * After both phases finish once, the game ends.
+ *
+ * @param gm Pointer to the initialized GameManager.
+ */
 void GameManager_Run(GameManager *gm) {
     printf("Game running...\n");
     while (gm->isRunning) {
@@ -91,6 +120,15 @@ void GameManager_Run(GameManager *gm) {
     }
 }
 
+/**
+ * @brief Release all memory associated with the GameManager.
+ *
+ * Cleans up the GameBoard and prints a shutdown message.
+ *
+ * @param gm Pointer to the GameManager to clean up.
+ *
+ * @note In a full implementation, playersScore should also be freed.
+ */
 void GameManager_Cleanup(GameManager *gm) {
     GameBoard_Cleanup(&gm->gb);
     printf("Game cleaned up!\n");

@@ -1,8 +1,23 @@
+/**
+ * @file movementPhase.c
+ * @brief Implements logic for checking available moves, validating movement,
+ *        executing penguin movement, and running the full movement phase loop.
+ */
+
 #include "movementPhase.h"
 #include "boardGenerator.h"
 
 #include <stdio.h>
 
+/**
+ * @brief Run the movement phase until all players are blocked.
+ *
+ * The phase proceeds in player order. Each player attempts a move; if a player
+ * has no valid moves, they are counted as blocked. When all players are
+ * consecutively blocked, the movement phase ends.
+ *
+ * @param gm Pointer to the GameManager (read-only).
+ */
 void MovementPhase_Run(const GameManager *gm) {
     bool availableMoves = true;
     int blocked_counter = 0;
@@ -25,6 +40,16 @@ void MovementPhase_Run(const GameManager *gm) {
     } while(availableMoves);
 }
 
+/**
+ * @brief Check whether a given player has *any* legal movement remaining.
+ *
+ * Iterates over all tiles, locating all penguins belonging to the player.
+ * For each penguin, checks whether it has possible movement directions.
+ *
+ * @param gb Pointer to the GameBoard.
+ * @param currentPlayerIndex Index of the player to check.
+ * @return true if the player has at least one legal move.
+ */
 bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerIndex) {
     bool availableMoves = false;
     for (int i = 0; i < gb->boardHeight; i++) {
@@ -38,7 +63,24 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     return availableMoves;
 }
 
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex) {
+/**
+ * @brief Quick heuristic to determine if a penguin may have any moves.
+ *
+ * This does **not** fully validate moves — it only checks whether there is at
+ * least one adjacent tile not occupied by the same player. Full validation is
+ * handled by Is_Valid_Move().
+ *
+ * @param gb Pointer to GameBoard.
+ * @param posX Penguin X position.
+ * @param posY Penguin Y position.
+ * @param boardHeight Height of board.
+ * @param boardWidth Width of board.
+ * @param currentPlayerIndex Player owning the penguin.
+ * @return true if at least one possible move direction exists.
+ */
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY,
+                                 const int boardHeight, const int boardWidth,
+                                 const int currentPlayerIndex) {
     if (posX != 0)
         if (gb->floeGrid[posY][posX-1].occupantId != currentPlayerIndex)
             return true;
@@ -54,6 +96,19 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
     return false;
 }
 
+/**
+ * @brief Execute one movement turn for the specified player.
+ *
+ * Prompts the user to:
+ *  - Select a penguin to move,
+ *  - Select a destination tile.
+ *
+ * The move is validated with Is_Valid_Move(). If legal, Move_Penguin() is
+ * executed and the updated board is displayed.
+ *
+ * @param gb Pointer to GameBoard.
+ * @param currentPlayerIndex Index of the active player.
+ */
 void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
     int startX, startY, endX, endY;
 
@@ -78,11 +133,33 @@ void Player_Movement_Turn(const GameBoard *gb, const int currentPlayerIndex) {
     }
 }
 
+/**
+ * @brief Check whether the given coordinates lie within the board.
+ *
+ * @param gb Pointer to GameBoard.
+ * @param x X-coordinate to check.
+ * @param y Y-coordinate to check.
+ * @return true if (x,y) lies inside the board dimensions.
+ */
 bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
     return x >= 0 && x < gb->boardWidth && y >= 0 && y < gb->boardHeight;
 }
 
-bool Move_Penguin(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+/**
+ * @brief Execute a penguin move after validating it.
+ *
+ * Transfers the penguin from the start tile to the target tile and removes
+ * the starting floe (making it water).
+ *
+ * @param gb Pointer to GameBoard.
+ * @param startX Source X position.
+ * @param startY Source Y position.
+ * @param endX Destination X position.
+ * @param endY Destination Y position.
+ * @return true if the move was legal and executed successfully.
+ */
+bool Move_Penguin(const GameBoard *gb, const int startX, const int startY,
+                  const int endX, const int endY) {
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
 
@@ -98,7 +175,25 @@ bool Move_Penguin(const GameBoard *gb, const int startX, const int startY, const
     return true;
 }
 
-bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY, const int endX, const int endY) {
+/**
+ * @brief Validate a penguin movement from (startX,startY) to (endX,endY).
+ *
+ * Rules enforced:
+ *  - Both coordinates must be inside the board.
+ *  - Starting tile must have a penguin.
+ *  - Target must be floating and empty.
+ *  - Movement must be straight (horizontal or vertical).
+ *  - All tiles along the path must be floating and unoccupied.
+ *
+ * @param gb Pointer to GameBoard.
+ * @param startX Starting X coordinate.
+ * @param startY Starting Y coordinate.
+ * @param endX Ending X coordinate.
+ * @param endY Ending Y coordinate.
+ * @return true if the move is valid under all game rules.
+ */
+bool Is_Valid_Move(const GameBoard *gb, const int startX, const int startY,
+                   const int endX, const int endY) {
     if (!Is_Move_In_Bounds(gb, startX, startY) || !Is_Move_In_Bounds(gb, endX, endY))
         return false;
 
