@@ -87,23 +87,23 @@ bool Is_Valid_Move(const GameBoard *gb, int startX, int startY, int endX, int en
  * Transfers the penguin to the target tile, and collapses the starting tile
  * (removing its fish and making it non-floating).
  *
- * @param gb Pointer to GameBoard.
+ * @param gm Pointer to GameManager.
  * @param startX Start X coordinate.
  * @param startY Start Y coordinate.
  * @param endX End X coordinate.
  * @param endY End Y coordinate.
  * @return true if the move is completed successfully.
  */
-bool Move_Penguin(GameBoard *gb, int startX, int startY, int endX, int endY);
+bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY);
 
 /**
  * @brief Prompt the player to choose a penguin and destination, then attempt the move.
  *
  * Displays errors when the chosen penguin or movement is invalid.
  *
- * @param gb Pointer to GameBoard.
+ * @param gm Pointer to GameManager.
  * @param currentPlayerIndex Index of the active player.
  */
-void Player_Movement_Turn(GameBoard *gb, int currentPlayerIndex);
+void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex);
 
 #endif
