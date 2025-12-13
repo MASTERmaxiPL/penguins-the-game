@@ -135,7 +135,7 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
         {
             printf("Invalid penguin.\n");
-            break;
+            continue;
         }
 
         printf("Choose destination (x y): ");
