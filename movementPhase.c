@@ -19,7 +19,6 @@
  * @param gm Pointer to the GameManager (read-only).
  */
 void MovementPhase_Run(GameManager *gm) {
-    bool availableMoves = true;
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
     int roundCounter = 1;
@@ -45,11 +44,9 @@ void MovementPhase_Run(GameManager *gm) {
 
         if (blocked_counter == gm->numOfPlayers) {
             printf("\nNo players have any moves left. Game ends!\n");
-            availableMoves = false;
             break;
         }
-    } while (availableMoves);
-
+    } while (true);
 }
 
 /**
@@ -117,7 +114,7 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
  * The move is validated with Is_Valid_Move(). If legal, Move_Penguin() is
  * executed and the updated board is displayed.
  *
- * @param gb Pointer to GameBoard.
+ * @param gm Pointer to GameManager.
  * @param currentPlayerIndex Index of the active player.
  */
 void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
@@ -172,7 +169,7 @@ bool Is_Move_In_Bounds(const GameBoard *gb, const int x, const int y) {
  * Transfers the penguin from the start tile to the target tile and removes
  * the starting floe (making it water).
  *
- * @param gb Pointer to GameBoard.
+ * @param gm Pointer to GameManager.
  * @param startX Source X position.
  * @param startY Source Y position.
  * @param endX Destination X position.

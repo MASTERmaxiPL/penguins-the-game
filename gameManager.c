@@ -16,9 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define minWidth 10
+#define maxPlayerCount 4
+#define minWidth 6
 #define maxWidth 30
-#define minHeight 10
+#define minHeight 6
 #define maxHeight 30
 
 static void Print_Final_Scores(const GameManager *gm);
@@ -40,7 +41,7 @@ void GameManager_Init(GameManager *gm) {
     int boardHeight;
 
     while (1) {
-        printf("Enter number of players (n>1): ");
+        printf("Enter number of players(2-%d): ", maxPlayerCount);
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
         if (inputCountNOP != 1) {
             printf("Invalid input! Please enter integer.\n");
@@ -55,7 +56,7 @@ void GameManager_Init(GameManager *gm) {
     }
 
     while (1) {
-        printf("Enter board width (10<x<30): ");
+        printf("Enter board width (%d-%d): ", minWidth, maxWidth);
         const int inputCountBW = scanf("%d", &boardWidth);
         if (inputCountBW != 1) {
             printf("Invalid input! Please enter integer.\n");
@@ -66,7 +67,7 @@ void GameManager_Init(GameManager *gm) {
             printf("The conditions are not met!\n");
             continue;
         }
-        printf("Enter board height (10<y<30): ");
+        printf("Enter board height (%d-%d): ", minHeight, maxHeight);
         const int inputCountBH = scanf("%d", &boardHeight);
         if (inputCountBH != 1) {
             printf("Invalid input! Please enter integer.\n");
@@ -82,13 +83,18 @@ void GameManager_Init(GameManager *gm) {
 
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
+    if (gm->gb.placeableFloeCount < gm->numOfPlayers) {
+        printf("The game generated with not enough tiles with 1 fish, game finished.\n");
+        return;
+    }
+
     gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
     gm->isRunning = true;
 
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
     while (1) {
-        printf("Enter number of penguins per player (0<n<=%d): ", maxPenguins);
+        printf("Enter number of penguins per player (1<=n<=%d): ", maxPenguins);
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
             printf("Invalid input! Please enter integer.\n");
