@@ -45,12 +45,10 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, int currentPlayerIndex);
  * @param posY Penguin Y coordinate.
  * @param boardHeight Height of the board.
  * @param boardWidth Width of the board.
- * @param currentPlayerIndex Index of the player owning the penguin.
  * @return true if at least one potential movement direction exists.
  */
 bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, int posX, int posY,
-                                 int boardHeight, int boardWidth,
-                                 int currentPlayerIndex);
+                                 int boardHeight, int boardWidth);
 
 /**
  * @brief Check if a coordinate lies within the bounds of the board.

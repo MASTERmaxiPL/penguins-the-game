@@ -64,7 +64,7 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
     for (int i = 0; i < gb->boardHeight; i++) {
         for (int j = 0; j < gb->boardWidth; j++) {
             if (gb->floeGrid[i][j].occupantId == currentPlayerIndex)
-                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth, currentPlayerIndex);
+                availableMoves = Check_Penguin_Has_Any_Moves(gb, j, i, gb->boardHeight, gb->boardWidth);
             if (availableMoves)
                 return availableMoves;
         }
@@ -84,10 +84,9 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
  * @param posY Penguin Y position.
  * @param boardHeight Height of board.
  * @param boardWidth Width of board.
- * @param currentPlayerIndex Player owning the penguin.
  * @return true if at least one possible move direction exists.
  */
-bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth, const int currentPlayerIndex)
+bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth)
 {
     if (posX != 0)
         if (gb->floeGrid[posY][posX-1].occupantId ==-1 && gb->floeGrid[posY][posX-1].isFloating)
