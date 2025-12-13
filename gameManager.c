@@ -17,9 +17,9 @@
 #include <stdlib.h>
 
 #define maxPlayerCount 4
-#define minWidth 6
+#define minWidth 8
 #define maxWidth 30
-#define minHeight 6
+#define minHeight 8
 #define maxHeight 30
 
 static void Print_Final_Scores(const GameManager *gm);
