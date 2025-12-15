@@ -42,4 +42,6 @@ add_executable(penguins_the_game main.c
         iceFloe.h
         gameBoard.h
         noise.c
+        inputHandler.c
+        inputHandler.h
 )
