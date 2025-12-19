@@ -9,8 +9,10 @@
  *  - And allows the user to replay the game if desired.
  */
 
-#include <stdio.h>
 #include "gameManager.h"
+#include "messages.h"
+
+#include <stdio.h>
 
 /**
  * @brief Program entry point.
@@ -27,18 +29,18 @@ int main() {
 
     do {
         char input;
-        printf("Welcome to penguin game!\n");
-        printf("Initiating...\n");
+        printf(MSG_WELCOME);
+        printf(MSG_INITIALIZING);
 
         GameManager_Init(&game);
 
-        printf("Trying to run...\n");
+        printf(MSG_TRYING_TO_RUN);
         GameManager_Run(&game);
 
-        printf("Game finished, cleaning...\n");
+        printf(MSG_GAME_FINISHED);
         GameManager_Cleanup(&game);
 
-        printf("Do you want to play again? (print 'y' to continue, else program finishes)\n");
+        printf(MSG_PLAY_AGAIN);
         scanf(" %c", &input);
 
         if (input != 'y' && input != 'Y')
@@ -46,6 +48,6 @@ int main() {
 
     } while (session_active);
 
-    printf("Game Closed!");
+    printf(MSG_GAME_CLOSED);
     return 0;
 }

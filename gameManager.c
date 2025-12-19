@@ -10,12 +10,14 @@
 #include "gameManager.h"
 #include "boardGenerator.h"
 #include "placementPhase.h"
+#include "messages.h"
 #include "movementPhase.h"
-#include "math.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#define minPlayerCount 2
 #define maxPlayerCount 4
 #define minWidth 8
 #define maxWidth 30
@@ -41,41 +43,41 @@ void GameManager_Init(GameManager *gm) {
     int boardHeight;
 
     while (1) {
-        printf("Enter number of players(2-%d): ", maxPlayerCount);
+        printf(MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount);
         const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
         if (inputCountNOP != 1) {
-            printf("Invalid input! Please enter integer.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             while (getchar() != '\n'){}
             continue;
         }
-        if (gm->numOfPlayers < 2) {
-            printf("The number of players must be greater than 1.\n");
+        if (gm->numOfPlayers < minPlayerCount || gm->numOfPlayers > maxPlayerCount) {
+            printf(MSG_INPUT_OUT_OF_RANGE, minPlayerCount, maxPlayerCount);
         }
         else
             break;
     }
 
     while (1) {
-        printf("Enter board width (%d-%d): ", minWidth, maxWidth);
+        printf(MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth);
         const int inputCountBW = scanf("%d", &boardWidth);
         if (inputCountBW != 1) {
-            printf("Invalid input! Please enter integer.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             while (getchar() != '\n'){}
             continue;
         }
         if (boardWidth < minWidth || boardWidth > maxWidth) {
-            printf("The conditions are not met!\n");
+            printf(MSG_INPUT_OUT_OF_RANGE, minWidth, maxWidth);
             continue;
         }
-        printf("Enter board height (%d-%d): ", minHeight, maxHeight);
+        printf(MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight);
         const int inputCountBH = scanf("%d", &boardHeight);
         if (inputCountBH != 1) {
-            printf("Invalid input! Please enter integer.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             while (getchar() != '\n'){}
             continue;
         }
         if (boardHeight < minHeight || boardHeight > maxHeight) {
-            printf("The conditions are not met!\n");
+            printf(MSG_INPUT_OUT_OF_RANGE, minHeight, maxHeight);
         }
         else
             break;
@@ -84,7 +86,7 @@ void GameManager_Init(GameManager *gm) {
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     if (gm->gb.placeableFloeCount < gm->numOfPlayers) {
-        printf("The game generated with not enough tiles with 1 fish, game finished.\n");
+        printf(MSG_NOT_ENOUGH_TILES);
         return;
     }
 
@@ -94,21 +96,21 @@ void GameManager_Init(GameManager *gm) {
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
     while (1) {
-        printf("Enter number of penguins per player (1<=n<=%d): ", maxPenguins);
+        printf(MSG_ENTER_NUMBERS_OF_PENGUINS, maxPenguins);
         const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
         if (inputCountPPP != 1) {
-            printf("Invalid input! Please enter integer.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             while (getchar() != '\n'){}
             continue;
         }
         if (gm->penguinsPerPlayer < 1 || gm->penguinsPerPlayer > maxPenguins) {
-            printf("The number of penguins must be between 1 and %d.\n", maxPenguins);
+            printf(MSG_INPUT_OUT_OF_RANGE, 1, maxPenguins);
         }
         else
             break;
     }
 
-    printf("Game initialized!\n");
+    printf(MSG_INITIALIZED);
 }
 
 /**
@@ -120,7 +122,7 @@ void GameManager_Init(GameManager *gm) {
  * @param gm Pointer to the initialized GameManager.
  */
 void GameManager_Run(GameManager *gm) {
-    printf("Game running...\n");
+    printf(MSG_GAME_RUNNING);
     while (gm->isRunning) {
         PlacementPhase_Run(gm);
         MovementPhase_Run(gm);
@@ -143,16 +145,14 @@ void GameManager_Cleanup(GameManager *gm) {
     free(gm->playersScore);
     gm->playersScore = NULL;
 
-    printf("Game cleaned up!\n");
+    printf(MSG_GAME_CLEANED);
 }
 
 static void Print_Final_Scores(const GameManager *gm) {
-    printf("\n============================\n");
-    printf("         FINAL SCORES       \n");
-    printf("============================\n");
+    printf(MSG_FINAL_SCORES);
 
     for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf("Player %d: %d points\n", i + 1, gm->playersScore[i]);
+        printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
     }
 
     int best = 0;
@@ -162,6 +162,5 @@ static void Print_Final_Scores(const GameManager *gm) {
         }
     }
 
-    printf("Winner: Player %d!\n", best + 1);
-    printf("============================\n\n");
+    printf(MSG_WINNER, best + 1, gm->playersScore[best]);
 }

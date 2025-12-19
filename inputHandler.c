@@ -4,6 +4,8 @@
 
 #include "inputHandler.h"
 
+#include "messages.h"
+
 static void ClearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
@@ -31,12 +33,12 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
         const long input = strtol(buffer, &endptr, 10);
 
         if (endptr == buffer || *endptr != '\n') {
-            printf("Invalid input! Please enter an integer.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             continue;
         }
 
         if (input <= min || input >= max) {
-            printf("Input out of range! Please enter a value between %d and %d.\n", min, max);
+            printf(MSG_INPUT_OUT_OF_RANGE, min, max);
             continue;
         }
 
@@ -71,12 +73,12 @@ InputStatus GetCoordinatesInRange(
         int inputX, inputY;
 
         if (sscanf(buffer, "%d %d", &inputX, &inputY) != 2) {
-            printf("Invalid format! Please enter 'x y' (e.g., 2 3).\n");
+            printf(MSG_INVALID_FORMAT);
             continue;
         }
 
         if (inputX <= minX || inputX >= maxX || inputY <= minY || inputY >= maxY) {
-            printf("Coordinates out of bounds! Range: %d-%d, %d-%d\n", minX, maxX, minY, maxY);
+            printf(MSG_COORDINATES_OUT_OF_RANGE, minX, maxX, minY, maxY);
             continue;
         }
 

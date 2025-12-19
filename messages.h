@@ -1,0 +1,63 @@
+//
+// Created by user on 19.12.2025.
+//
+
+#ifndef PENGUINS_THE_GAME_MESSAGES_H
+#define PENGUINS_THE_GAME_MESSAGES_H
+
+#define MSG_WELCOME "Welcome to Penguins the Game!\n"
+#define MSG_INITIALIZING "Initializing...\n"
+#define MSG_INITIALIZED "Initialized!\n"
+
+#define MSG_ENTER_BOARD_WIDTH "Enter board width (%d-%d): "
+#define MSG_ENTER_BOARD_HEIGHT "Enter board height (%d-%d): "
+
+#define MSG_ENTER_NUMBER_OF_PLAYERS "Enter number of players(%d-%d): "
+#define MSG_ENTER_NUMBERS_OF_PENGUINS "Enter number of penguins per player (1-%d): "
+
+#define MSG_TRYING_TO_RUN "Trying to run...\n"
+#define MSG_GAME_RUNNING "Game running...\n"
+
+#define MSG_TURN "\n===== TURN %d =====\n"
+#define MSG_PLAYER_POINTS "Player %d has %d fish.\n"
+#define MSG_AFTER_POSITION_UPDATE "Current Player placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
+
+#define MSG_PLACEMENT_PHASE "Placement Phase\n"
+#define MSG_PLACEMENT_PHASE_FINISHED "Placement Phase finished successfully!\n"
+
+#define MSG_ENTER_COORDINATES "Player %d, put your x y coordinates: \n"
+
+#define MSG_MOVEMENT_PHASE "Movement Phase\n"
+#define MSG_MOVEMENT_PHASE_FINISHED "Movement Phase finished successfully!\n"
+
+#define MSG_CHOOSE_PENGUIN "Player %d, choose penguin to move (x y): "
+#define MSG_CHOOSE_DESTINATION "Choose destination (x y): "
+#define MSG_MOVE_SUCCESSFUL "Move successful!\n"
+#define MSG_INVALID_MOVE "Invalid move. Try again.\n"
+#define MSG_INVALID_PENGUIN "Invalid penguin.\n"
+#define MSG_PLAYER_NO_AVAILABLE_MOVES "Player %d has no available moves, skipping...\n"
+#define MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES "\nNo players have any moves left. Game ends!\n"
+
+#define MSG_FINAL_SCORES "\n ==================\n \n===== FINAL SCORES =====\n \n ==================\n"
+#define MSG_WINNER "Player %d wins with %d fish! Congratulations!\n ============================\n\n"
+
+#define MSG_GAME_FINISHED "Game finished, cleaning...\n"
+#define MSG_GAME_CLEANED "Game cleaned!\n"
+#define MSG_PLAY_AGAIN "Do you want to play again? (print 'y' to continue, else program finishes)\n"
+#define MSG_GAME_CLOSED "Game Closed!\n"
+
+#define MSG_GAME_SAVED "Game saved successfully."
+#define MSG_GAME_SAVE_FAILED "Failed to save the game.\n"
+#define MSG_GAME_LOADED "Game loaded successfully.\n"
+#define MSG_GAME_LOAD_FAILED "Failed to load the game.\n"
+
+#define MSG_INVALID_INPUT_TYPE "Invalid input! Please enter an integer.\n"
+#define MSG_INPUT_OUT_OF_RANGE "Input out of range! Please enter a value between %d and %d.\n"
+#define MSG_COORDINATES_OUT_OF_RANGE "Coordinates out of range! Please enter values between (%d,%d) and (%d,%d).\n"
+#define MSG_INVALID_FORMAT "Invalid format! Please enter 'x y' (e.g., 2 3).\n"
+#define MSG_NOT_ENOUGH_TILES "The game generated with not enough tiles with 1 fish, game finished.\n"
+#define MSG_TILE_NOT_AVAILABLE "The selected tile is not available for placement. Please choose another tile.(%d, %d)\n"
+
+#define MSG_MEMORY_ALLOCATION_FAILED "Memory allocation failed!\n"
+
+#endif

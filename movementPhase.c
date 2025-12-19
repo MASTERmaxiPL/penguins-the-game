@@ -6,6 +6,7 @@
 
 #include "movementPhase.h"
 #include "boardGenerator.h"
+#include "messages.h"
 
 #include <stdio.h>
 
@@ -21,29 +22,29 @@
 void MovementPhase_Run(GameManager *gm) {
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
-    int roundCounter = 1;
+    int turnCounter = 1;
 
-    printf("\n===== ROUND %d =====\n", roundCounter);
+    printf(MSG_TURN, turnCounter);
 
     do {
         currentPlayerIndex++;
 
         if (currentPlayerIndex >= gm->numOfPlayers) {
             currentPlayerIndex = 0;
-            roundCounter++;
-            printf("\n===== ROUND %d =====\n", roundCounter);
+            turnCounter++;
+            printf(MSG_TURN, turnCounter);
         }
 
         if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
             blocked_counter++;
-            printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
+            printf(MSG_PLAYER_NO_AVAILABLE_MOVES, currentPlayerIndex + 1);
         } else {
             blocked_counter = 0;
             Player_Movement_Turn(gm, currentPlayerIndex);
         }
 
         if (blocked_counter == gm->numOfPlayers) {
-            printf("\nNo players have any moves left. Game ends!\n");
+            printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
     } while (true);
@@ -122,11 +123,11 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
     int startX, startY, endX, endY;
 
     while(1){
-        printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
+        printf(MSG_CHOOSE_PENGUIN, currentPlayerIndex + 1);
         const int inputCount = scanf("%d %d", &startX, &startY);
 
         if (inputCount != 2) {
-            printf("Invalid input! Please enter two integers.\n");
+            printf(MSG_INVALID_INPUT_TYPE);
             while (getchar() != '\n'){}
             continue;
         }
@@ -134,19 +135,19 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
         if (!Is_Move_In_Bounds(gb, startX, startY) ||
             gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
         {
-            printf("Invalid penguin.\n");
+            printf(MSG_INVALID_PENGUIN);
             continue;
         }
 
-        printf("Choose destination (x y): ");
+        printf(MSG_CHOOSE_DESTINATION);
         scanf("%d %d", &endX, &endY);
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
-            printf("Move successful!\n");
+            printf(MSG_MOVE_SUCCESSFUL);
             Print_Board(gb);
             break;
         }
-        printf("Invalid move.\n");
+        printf(MSG_INVALID_MOVE);
     }
 }
 
@@ -190,7 +191,7 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     const int collectedFish = target->fishCount;
     gm->playersScore[playerId] += collectedFish;
 
-    printf("Player %d gains %d fish! Total = %d\n", playerId + 1, collectedFish, gm->playersScore[playerId]);
+    printf(MSG_AFTER_POSITION_UPDATE, endX, endY, collectedFish, gm->playersScore[playerId]);
 
     target->occupantId = playerId;
 
