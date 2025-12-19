@@ -9,6 +9,7 @@
 
 #include "placementPhase.h"
 #include "boardGenerator.h"
+#include "inputHandler.h"
 #include "messages.h"
 
 #include <stdio.h>
@@ -27,10 +28,11 @@
 void PlacementPhase_Run(GameManager *gm) {
     printf(MSG_PLACEMENT_PHASE);
 
-    for (int turn = 1; turn < gm->penguinsPerPlayer + 1; turn++) {
-        printf(MSG_TURN, turn);
+    for (int round = 1; round < gm->penguinsPerPlayer + 1; round++) {
+        printf(MSG_ROUND, round);
 
         for (int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
+            printf(MSG_PLAYER_TURN, currentPlayerIndex+1);
             Print_Board(&gm->gb);
             Player_Placement_Turn(gm, currentPlayerIndex);
         }
@@ -64,17 +66,15 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 
     while (1)
     {
-        printf(MSG_ENTER_COORDINATES, currentPlayerIndex + 1);
-        const int inputCount = scanf("%d %d", &x, &y);
+        const InputStatus status = GetCoordinatesInRange(MSG_ENTER_COORDINATES,
+                                                   0, gm->gb.boardWidth - 1,
+                                                   0, gm->gb.boardHeight - 1,
+                                                   &x, &y);
 
-        if (inputCount != 2) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-
-        if (x >= gm->gb.boardWidth || y >= gm->gb.boardHeight || x < 0 || y < 0) {
-            printf(MSG_INPUT_OUT_OF_RANGE, 0, gm->gb.boardWidth - 1);
+        if (status == INPUT_SAVE)
+        {
+            printf(MSG_GAME_SAVED);
+            //SAVE GAME
             continue;
         }
 

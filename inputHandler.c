@@ -14,7 +14,8 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
     char buffer[100];
 
     while (1) {
-        printf("%s", prompt);
+        printf(prompt, min, max);
+
         if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
             return INPUT_EXIT;
         }
@@ -36,7 +37,7 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
             continue;
         }
 
-        if (input <= min || input >= max) {
+        if (input < min || input > max) {
             printf(MSG_INPUT_OUT_OF_RANGE, min, max);
             continue;
         }
@@ -76,8 +77,8 @@ InputStatus GetCoordinatesInRange(
             continue;
         }
 
-        if (inputX <= minX || inputX >= maxX || inputY <= minY || inputY >= maxY) {
-            printf(MSG_COORDINATES_OUT_OF_RANGE, minX, maxX, minY, maxY);
+        if (inputX < minX || inputX > maxX || inputY < minY || inputY > maxY) {
+            printf(MSG_COORDINATES_OUT_OF_BOUNDS, minX, maxX, minY, maxY);
             continue;
         }
 

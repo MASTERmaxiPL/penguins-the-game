@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 
+#include "inputHandler.h"
+
 /**
  * @brief Run the movement phase until all players are blocked.
  *
@@ -22,18 +24,20 @@
 void MovementPhase_Run(GameManager *gm) {
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
-    int turnCounter = 1;
+    int roundCounter = 1;
 
-    printf(MSG_TURN, turnCounter);
+    printf(MSG_ROUND, roundCounter);
 
     do {
         currentPlayerIndex++;
 
         if (currentPlayerIndex >= gm->numOfPlayers) {
             currentPlayerIndex = 0;
-            turnCounter++;
-            printf(MSG_TURN, turnCounter);
+            roundCounter++;
+            printf(MSG_ROUND, roundCounter);
         }
+
+        printf(MSG_PLAYER_TURN, currentPlayerIndex + 1);
 
         if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
             blocked_counter++;
@@ -120,27 +124,35 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
 void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
     const GameBoard *gb = &gm->gb;
 
+    InputStatus status;
     int startX, startY, endX, endY;
 
     while(1){
-        printf(MSG_CHOOSE_PENGUIN, currentPlayerIndex + 1);
-        const int inputCount = scanf("%d %d", &startX, &startY);
+         status = GetCoordinatesInRange(
+            MSG_CHOOSE_PENGUIN,
+            0, gb->boardWidth - 1,
+            0, gb->boardHeight - 1,
+            &startX, &startY);
 
-        if (inputCount != 2) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-
-        if (!Is_Move_In_Bounds(gb, startX, startY) ||
-            gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
+        if (status == INPUT_SAVE)
         {
-            printf(MSG_INVALID_PENGUIN);
+            printf(MSG_GAME_SAVED);
+            //SAVE GAME
             continue;
         }
 
-        printf(MSG_CHOOSE_DESTINATION);
-        scanf("%d %d", &endX, &endY);
+        status = GetCoordinatesInRange(
+            MSG_CHOOSE_DESTINATION,
+            0, gb->boardWidth - 1,
+            0, gb->boardHeight - 1,
+            &endX, &endY);
+
+        if (status == INPUT_SAVE)
+        {
+            printf(MSG_GAME_SAVED);
+            //SAVE GAME
+            continue;
+        }
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
             printf(MSG_MOVE_SUCCESSFUL);

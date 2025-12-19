@@ -7,11 +7,12 @@
  * manages the placement and movement phases, and shuts down the game cleanly.
  */
 
-#include "gameManager.h"
 #include "boardGenerator.h"
-#include "placementPhase.h"
+#include "gameManager.h"
+#include "inputHandler.h"
 #include "messages.h"
 #include "movementPhase.h"
+#include "placementPhase.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -41,46 +42,27 @@ static void Print_Final_Scores(const GameManager *gm);
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
+    InputStatus status;
 
-    while (1) {
-        printf(MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount);
-        const int inputCountNOP = scanf("%d", &gm->numOfPlayers);
-        if (inputCountNOP != 1) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-        if (gm->numOfPlayers < minPlayerCount || gm->numOfPlayers > maxPlayerCount) {
-            printf(MSG_INPUT_OUT_OF_RANGE, minPlayerCount, maxPlayerCount);
-        }
-        else
-            break;
+    status = GetIntegerInRange(MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount, &gm->numOfPlayers);
+    if (status == INPUT_SAVE)
+    {
+        printf(MSG_GAME_SAVED);
+        //SAVE GAME
     }
 
-    while (1) {
-        printf(MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth);
-        const int inputCountBW = scanf("%d", &boardWidth);
-        if (inputCountBW != 1) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-        if (boardWidth < minWidth || boardWidth > maxWidth) {
-            printf(MSG_INPUT_OUT_OF_RANGE, minWidth, maxWidth);
-            continue;
-        }
-        printf(MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight);
-        const int inputCountBH = scanf("%d", &boardHeight);
-        if (inputCountBH != 1) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-        if (boardHeight < minHeight || boardHeight > maxHeight) {
-            printf(MSG_INPUT_OUT_OF_RANGE, minHeight, maxHeight);
-        }
-        else
-            break;
+    status = GetIntegerInRange(MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth, &boardWidth);
+    if (status == INPUT_SAVE)
+    {
+        printf(MSG_GAME_SAVED);
+        //SAVE GAME
+    }
+
+    status = GetIntegerInRange(MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight, &boardHeight);
+    if (status == INPUT_SAVE)
+    {
+        printf(MSG_GAME_SAVED);
+        //SAVE GAME
     }
 
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
@@ -95,19 +77,11 @@ void GameManager_Init(GameManager *gm) {
 
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
-    while (1) {
-        printf(MSG_ENTER_NUMBERS_OF_PENGUINS, maxPenguins);
-        const int inputCountPPP = scanf("%d", &gm->penguinsPerPlayer);
-        if (inputCountPPP != 1) {
-            printf(MSG_INVALID_INPUT_TYPE);
-            while (getchar() != '\n'){}
-            continue;
-        }
-        if (gm->penguinsPerPlayer < 1 || gm->penguinsPerPlayer > maxPenguins) {
-            printf(MSG_INPUT_OUT_OF_RANGE, 1, maxPenguins);
-        }
-        else
-            break;
+    status = GetIntegerInRange(MSG_ENTER_NUMBERS_OF_PENGUINS, 1, maxPenguins, &gm->penguinsPerPlayer);
+    if (status == INPUT_SAVE)
+    {
+        printf(MSG_GAME_SAVED);
+        //SAVE GAME
     }
 
     printf(MSG_INITIALIZED);
