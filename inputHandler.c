@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "inputHandler.h"
-
 #include "messages.h"
 
 static void ClearInputBuffer() {

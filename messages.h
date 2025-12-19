@@ -5,28 +5,34 @@
 #ifndef PENGUINS_THE_GAME_MESSAGES_H
 #define PENGUINS_THE_GAME_MESSAGES_H
 
+// General Messages
 #define MSG_WELCOME "Welcome to Penguins the Game!\n"
 #define MSG_INITIALIZING "Initializing...\n"
 #define MSG_INITIALIZED "Initialized!\n"
 
+// Game Setup Messages
 #define MSG_ENTER_BOARD_WIDTH "Enter board width (%d-%d): "
 #define MSG_ENTER_BOARD_HEIGHT "Enter board height (%d-%d): "
 
 #define MSG_ENTER_NUMBER_OF_PLAYERS "Enter number of players(%d-%d): "
 #define MSG_ENTER_NUMBERS_OF_PENGUINS "Enter number of penguins per player (1-%d): "
 
+// Game Running Messages
 #define MSG_TRYING_TO_RUN "Trying to run...\n"
 #define MSG_GAME_RUNNING "Game running...\n"
 
+// Turn Messages
 #define MSG_TURN "\n===== TURN %d =====\n"
 #define MSG_PLAYER_POINTS "Player %d has %d fish.\n"
 #define MSG_AFTER_POSITION_UPDATE "Current Player placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
 
+// Placement Phase Messages
 #define MSG_PLACEMENT_PHASE "Placement Phase\n"
 #define MSG_PLACEMENT_PHASE_FINISHED "Placement Phase finished successfully!\n"
 
 #define MSG_ENTER_COORDINATES "Player %d, put your x y coordinates: \n"
 
+// Movement Phase Messages
 #define MSG_MOVEMENT_PHASE "Movement Phase\n"
 #define MSG_MOVEMENT_PHASE_FINISHED "Movement Phase finished successfully!\n"
 
@@ -38,6 +44,7 @@
 #define MSG_PLAYER_NO_AVAILABLE_MOVES "Player %d has no available moves, skipping...\n"
 #define MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES "\nNo players have any moves left. Game ends!\n"
 
+// Game End Messages
 #define MSG_FINAL_SCORES "\n ==================\n \n===== FINAL SCORES =====\n \n ==================\n"
 #define MSG_WINNER "Player %d wins with %d fish! Congratulations!\n ============================\n\n"
 
@@ -46,11 +53,13 @@
 #define MSG_PLAY_AGAIN "Do you want to play again? (print 'y' to continue, else program finishes)\n"
 #define MSG_GAME_CLOSED "Game Closed!\n"
 
+// Save/Load Messages
 #define MSG_GAME_SAVED "Game saved successfully."
 #define MSG_GAME_SAVE_FAILED "Failed to save the game.\n"
 #define MSG_GAME_LOADED "Game loaded successfully.\n"
 #define MSG_GAME_LOAD_FAILED "Failed to load the game.\n"
 
+// Error Messages
 #define MSG_INVALID_INPUT_TYPE "Invalid input! Please enter an integer.\n"
 #define MSG_INPUT_OUT_OF_RANGE "Input out of range! Please enter a value between %d and %d.\n"
 #define MSG_COORDINATES_OUT_OF_RANGE "Coordinates out of range! Please enter values between (%d,%d) and (%d,%d).\n"
