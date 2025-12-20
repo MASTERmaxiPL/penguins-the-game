@@ -13,11 +13,22 @@
 #define MSG_INITIALIZED "Initialized!\n"
 
 // Game Setup Messages
+#define MSG_ENTER_NEW_OR_LOAD_GAME "Enter '%d' to run New Game or '%d' to Load Game:"
+#define MSG_ENTER_TRY_AGAIN_OR_NEW_SETTINGS "Initialization failed.\nEnter '%d' to Re-generate board with same settings or '%d' to Change settings:"
+#define MSG_GAME_OPTION_DOES_NOT_EXIST "Given value does not correspond to any game option. Try again.\n"
+
 #define MSG_ENTER_BOARD_WIDTH "Enter board width (%d-%d):"
 #define MSG_ENTER_BOARD_HEIGHT "Enter board height (%d-%d):"
 
 #define MSG_ENTER_NUMBER_OF_PLAYERS "Enter number of players (%d-%d):"
 #define MSG_ENTER_NUMBERS_OF_PENGUINS "Enter number of penguins per player (%d-%d):"
+
+// New/Load Game Messages
+#define MSG_NEW_GAME "Starting a new game...\n"
+#define MSG_LOAD_GAME "Loading a saved game...\n"
+
+#define MSG_GAME_LOADED "Game loaded successfully.\n"
+#define MSG_GAME_LOAD_FAILED "Failed to load the game.\n"
 
 // Game Running Messages
 #define MSG_TRYING_TO_RUN "Trying to run...\n"
@@ -59,8 +70,6 @@
 // Save/Load Messages
 #define MSG_GAME_SAVED "Game saved successfully.\n"
 #define MSG_GAME_SAVE_FAILED "Failed to save the game.\n"
-#define MSG_GAME_LOADED "Game loaded successfully.\n"
-#define MSG_GAME_LOAD_FAILED "Failed to load the game.\n"
 
 // Error Messages
 #define MSG_INVALID_INPUT_TYPE "Invalid input! Please enter an integer.\n"

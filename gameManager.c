@@ -20,76 +20,158 @@
 
 #define minPlayerCount 2
 #define maxPlayerCount 4
-#define minWidth 8
+#define minWidth 2
 #define maxWidth 30
-#define minHeight 8
+#define minHeight 2
 #define maxHeight 30
 
+#define newGameOption 1
+#define loadGameOption 2
+
+#define tryAgainOption 1
+#define changeSettingsOption 2
+
+static InputStatus Get_Game_Settings(GameManager *gm, int *outWidth, int *outHeight);
+static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm);
+static InputStatus Initialize_New_Board(GameManager *gm, const int boardWidth, const int boardHeight);
 static void Print_Final_Scores(const GameManager *gm);
 
 /**
- * @brief Initialize the GameManager and all required game parameters.
+ * @brief Initialize the GameManager and prompt the user for game setup values.
  *
- * Performs the following:
- *  - Prompts the user for the number of players.
- *  - Prompts for valid board width/height.
- *  - Initializes the GameBoard.
- *  - Allocates per-player score storage.
- *  - Determines legal number of penguins per player.
+ * Allocates memory for scores, initializes the board, and sets initial state.
  *
- * @param gm Pointer to the GameManager instance to initialize.
+ * @param gm Pointer to the GameManager to initialize.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void GameManager_Init(GameManager *gm) {
-    int boardWidth;
-    int boardHeight;
+InputStatus GameManager_Init(GameManager *gm) {
+    InputStatus status;
+
+    int choice;
+    char prompt[TEXT_BUFFER_SIZE];
+
+    while (1) {
+        snprintf(prompt, sizeof(prompt), MSG_ENTER_NEW_OR_LOAD_GAME, newGameOption, loadGameOption);
+        status = GetIntegerInRange(prompt, newGameOption, loadGameOption, &choice);
+
+        if (status == INPUT_EXIT) return status;
+
+        if (choice == loadGameOption) {
+            // LOAD GAME
+            return INPUT_EXIT;
+        }
+
+        if (choice == newGameOption) {
+            int w, h;
+            status = Get_Game_Settings(gm, &w, &h);
+            if (status != INPUT_VALID) return status;
+
+            bool setup_complete = false;
+            while (!setup_complete)
+            {
+                status = Initialize_New_Board(gm, w, h);
+
+                if (status == INPUT_ERROR_INIT_FAILED) {
+                    snprintf(prompt, sizeof(prompt), MSG_ENTER_TRY_AGAIN_OR_NEW_SETTINGS, tryAgainOption, changeSettingsOption);
+                    status = GetIntegerInRange(prompt, tryAgainOption, changeSettingsOption, &choice);
+                    if (status == INPUT_EXIT) {
+                        return status;
+                    }
+
+                    if (choice == tryAgainOption) {
+                        GameBoard_Cleanup(&gm->gb);
+                        continue;
+                    }
+                    if (choice == changeSettingsOption) {
+                        GameBoard_Cleanup(&gm->gb);
+                        break;
+                    }
+                }
+
+                gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
+                if (Get_Number_Of_Penguins_Per_Player(gm) != INPUT_VALID) {
+                    GameBoard_Cleanup(&gm->gb);
+                    free(gm->playersScore);
+                    break;
+                }
+
+                gm->isRunning = true;
+                setup_complete = true;
+            }
+
+            if (setup_complete) return INPUT_VALID;
+        }
+    }
+}
+
+/**
+ * @brief Prompt user for game settings: number of players, board width, and height.
+ *
+ * @param gm Pointer to the GameManager to store number of players.
+ * @param outWidth Pointer to store the chosen board width.
+ * @param outHeight Pointer to store the chosen board height.
+ * @return InputStatus indicating success or failure of input operations.
+ */
+static InputStatus Get_Game_Settings(GameManager *gm, int *outWidth, int *outHeight){
     char prompt[TEXT_BUFFER_SIZE];
     InputStatus status;
 
     snprintf(prompt, sizeof(prompt), MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount);
     status = GetIntegerInRange(prompt, minPlayerCount, maxPlayerCount, &gm->numOfPlayers);
-    if (status == INPUT_EXIT)
-    {
-        printf(MSG_GAME_CLOSED);
-        //CLOSE
-    }
+    if (status != INPUT_VALID) return status;
 
     snprintf(prompt, sizeof(prompt), MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth);
-    status = GetIntegerInRange(prompt, minWidth, maxWidth, &boardWidth);
-    if (status == INPUT_EXIT)
-    {
-        printf(MSG_GAME_CLOSED);
-        //CLOSE
-    }
+    status = GetIntegerInRange(prompt, minWidth, maxWidth, outWidth);
+    if (status != INPUT_VALID) return status;
 
     snprintf(prompt, sizeof(prompt), MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight);
-    status = GetIntegerInRange(prompt, minHeight, maxHeight, &boardHeight);
-    if (status == INPUT_EXIT)
-    {
-        printf(MSG_GAME_CLOSED);
-        //CLOSE
-    }
+    status = GetIntegerInRange(prompt, minHeight, maxHeight, outHeight);
+    return status;
+}
 
+/**
+ * @brief Initialize a new game board with specified dimensions.
+ *
+ * Validates that there are enough placeable tiles for all players.
+ *
+ * @param gm Pointer to the GameManager containing the GameBoard.
+ * @param boardWidth Desired width of the game board.
+ * @param boardHeight Desired height of the game board.
+ * @return InputStatus indicating success or failure of initialization.
+ */
+static InputStatus Initialize_New_Board(GameManager *gm, const int boardWidth, const int boardHeight) {
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
 
     if (gm->gb.placeableFloeCount < gm->numOfPlayers) {
         printf(MSG_NOT_ENOUGH_TILES);
-        return;
+        return INPUT_ERROR_INIT_FAILED;
     }
 
-    gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
-    gm->isRunning = true;
+    return INPUT_VALID;
+}
+
+/**
+ * @brief Prompt user for the number of penguins each player will have.
+ *
+ * The maximum number is determined by the total placeable tiles divided
+ * by the number of players.
+ *
+ * @param gm Pointer to the GameManager to store penguins per player.
+ * @return InputStatus indicating success or failure of input operation.
+ */
+static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm){
+    char prompt[TEXT_BUFFER_SIZE];
 
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
     snprintf(prompt, sizeof(prompt), MSG_ENTER_NUMBERS_OF_PENGUINS, 1, maxPenguins);
-    status = GetIntegerInRange(prompt, 1, maxPenguins, &gm->penguinsPerPlayer);
+    const InputStatus status = GetIntegerInRange(prompt, 1, maxPenguins, &gm->penguinsPerPlayer);
     if (status == INPUT_EXIT)
     {
         printf(MSG_GAME_CLOSED);
-        //CLOSE
+        return status;
     }
-
-    printf(MSG_INITIALIZED);
+    return status;
 }
 
 /**

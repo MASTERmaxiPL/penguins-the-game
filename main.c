@@ -25,26 +25,34 @@
  */
 int main() {
     GameManager game;
+    InputStatus status;
+
     bool session_active = true;
+    char input;
 
     do {
-        char input;
         printf(MSG_WELCOME);
-        printf(MSG_INITIALIZING);
 
-        GameManager_Init(&game);
+        status = GameManager_Init(&game);
 
-        printf(MSG_TRYING_TO_RUN);
-        GameManager_Run(&game);
+        if (status == INPUT_EXIT) {
+            break;
+        }
 
-        printf(MSG_GAME_FINISHED);
-        GameManager_Cleanup(&game);
+        if (status == INPUT_VALID)
+        {
+            printf(MSG_TRYING_TO_RUN);
+            GameManager_Run(&game);
 
-        printf(MSG_PLAY_AGAIN);
-        scanf(" %c", &input);
+            printf(MSG_GAME_FINISHED);
+            GameManager_Cleanup(&game);
 
-        if (input != 'y' && input != 'Y')
-            session_active = false;
+            printf(MSG_PLAY_AGAIN);
+            scanf(" %c", &input);
+
+            if (input != 'y' && input != 'Y')
+                session_active = false;
+        }
 
     } while (session_active);
 
