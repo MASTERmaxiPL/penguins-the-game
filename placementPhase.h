@@ -19,8 +19,9 @@
  * round until they have placed the required number.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void PlacementPhase_Run(GameManager *gm);
+InputStatus PlacementPhase_Run(GameManager *gm);
 
 /**
  * @brief Place a penguin on the selected floe and award fish to the player.
@@ -49,7 +50,8 @@ void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y);
  *
  * @param gm Pointer to the GameManager.
  * @param currentPlayerIndex Index of the player whose turn it is.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Placement_Turn(GameManager *gm, int currentPlayerIndex);
+InputStatus Player_Placement_Turn(GameManager *gm, int currentPlayerIndex);
 
 #endif

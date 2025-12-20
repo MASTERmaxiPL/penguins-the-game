@@ -62,6 +62,8 @@ InputStatus GameManager_Init(GameManager *gm) {
         }
 
         if (choice == newGameOption) {
+            gm->currentPhase = PHASE_INIT;
+
             int w, h;
             status = Get_Game_Settings(gm, &w, &h);
             if (status != INPUT_VALID) return status;
@@ -99,7 +101,11 @@ InputStatus GameManager_Init(GameManager *gm) {
                 setup_complete = true;
             }
 
-            if (setup_complete) return INPUT_VALID;
+            if (setup_complete)
+            {
+                gm->currentPhase = PHASE_PLACEMENT;
+                return INPUT_VALID;
+            }
         }
     }
 }
@@ -183,10 +189,27 @@ static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm){
  * @param gm Pointer to the initialized GameManager.
  */
 void GameManager_Run(GameManager *gm) {
+    InputStatus status;
     printf(MSG_GAME_RUNNING);
     while (gm->isRunning) {
-        PlacementPhase_Run(gm);
-        MovementPhase_Run(gm);
+        if (gm->currentPhase == PHASE_PLACEMENT)
+        {
+            status = PlacementPhase_Run(gm);
+            gm->currentPhase = PHASE_MOVEMENT;
+            if (status == INPUT_EXIT) {
+                gm->isRunning = false;
+                return;
+            }
+        }
+        if (gm->currentPhase == PHASE_MOVEMENT)
+        {
+            status = MovementPhase_Run(gm);
+            if (status == INPUT_EXIT) {
+                gm->isRunning = false;
+                return;
+            }
+            gm->currentPhase = PHASE_CLEANUP;
+        }
         Print_Final_Scores(gm);
         gm->isRunning=false;
     }

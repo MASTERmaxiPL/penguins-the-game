@@ -22,7 +22,6 @@
  */
 typedef enum
 {
-    PHASE_MENU,
     PHASE_INIT,
     PHASE_PLACEMENT,
     PHASE_MOVEMENT,

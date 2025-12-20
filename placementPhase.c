@@ -24,8 +24,9 @@
  *  - Places the penguin and awards fish.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void PlacementPhase_Run(GameManager *gm) {
+InputStatus PlacementPhase_Run(GameManager *gm) {
     printf(MSG_PLACEMENT_PHASE);
 
     for (int round = 1; round < gm->penguinsPerPlayer + 1; round++) {
@@ -34,7 +35,8 @@ void PlacementPhase_Run(GameManager *gm) {
         for (int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
             printf(MSG_PLAYER_TURN, currentPlayerIndex+1);
             Print_Board(&gm->gb);
-            Player_Placement_Turn(gm, currentPlayerIndex);
+            const InputStatus status = Player_Placement_Turn(gm, currentPlayerIndex);
+            if (status == INPUT_EXIT) return status;
         }
     }
 
@@ -44,6 +46,7 @@ void PlacementPhase_Run(GameManager *gm) {
     for (int i = 0; i < gm->numOfPlayers; i++) {
         printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
     }
+    return INPUT_VALID;
 }
 
 /**
@@ -59,8 +62,9 @@ void PlacementPhase_Run(GameManager *gm) {
  *
  * @param gm Pointer to GameManager.
  * @param currentPlayerIndex Index of the player taking the turn.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
+InputStatus Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 {
     int x, y;
 
@@ -71,12 +75,7 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
                                                    0, gm->gb.boardHeight - 1,
                                                    &x, &y);
 
-        if (status == INPUT_EXIT)
-        {
-            printf(MSG_GAME_CLOSED);
-            //CLOSE
-            continue;
-        }
+        if (status == INPUT_EXIT) return status;
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
@@ -87,6 +86,7 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 
         printf(MSG_TILE_NOT_AVAILABLE, x, y);
     }
+    return INPUT_VALID;
 }
 
 /**

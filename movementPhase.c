@@ -20,8 +20,9 @@
  * consecutively blocked, the movement phase ends.
  *
  * @param gm Pointer to the GameManager (read-only).
+ * @return InputStatus indicating success or failure of initialization.
  */
-void MovementPhase_Run(GameManager *gm) {
+InputStatus MovementPhase_Run(GameManager *gm) {
     int blocked_counter = 0;
     int currentPlayerIndex = -1;
     int roundCounter = 1;
@@ -44,14 +45,16 @@ void MovementPhase_Run(GameManager *gm) {
             printf(MSG_PLAYER_NO_AVAILABLE_MOVES, currentPlayerIndex + 1);
         } else {
             blocked_counter = 0;
-            Player_Movement_Turn(gm, currentPlayerIndex);
+            const InputStatus status = Player_Movement_Turn(gm);
+            if (status == INPUT_EXIT) return status;
         }
 
         if (blocked_counter == gm->numOfPlayers) {
             printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
-    } while (true);
+    } while (1);
+    return INPUT_VALID;
 }
 
 /**
@@ -119,12 +122,12 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
  * executed and the updated board is displayed.
  *
  * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the active player.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
-    const GameBoard *gb = &gm->gb;
-
+InputStatus Player_Movement_Turn(GameManager *gm) {
     InputStatus status;
+
+    const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
 
     while(1){
@@ -133,26 +136,14 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             0, gb->boardWidth - 1,
             0, gb->boardHeight - 1,
             &startX, &startY);
-
-        if (status == INPUT_EXIT)
-        {
-            printf(MSG_GAME_CLOSED);
-            //CLOSE
-            continue;
-        }
+        if (status == INPUT_EXIT) return status;
 
         status = GetCoordinatesInRange(
             MSG_CHOOSE_DESTINATION,
             0, gb->boardWidth - 1,
             0, gb->boardHeight - 1,
             &endX, &endY);
-
-        if (status == INPUT_EXIT)
-        {
-            printf(MSG_GAME_CLOSED);
-            //CLOSE
-            continue;
-        }
+        if (status == INPUT_EXIT) return status;
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
             printf(MSG_MOVE_SUCCESSFUL);
@@ -161,6 +152,7 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
         }
         printf(MSG_INVALID_MOVE);
     }
+    return status;
 }
 
 /**

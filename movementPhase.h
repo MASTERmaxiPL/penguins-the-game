@@ -19,8 +19,9 @@
  * @brief Run the movement phase until all players become blocked.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void MovementPhase_Run(GameManager *gm);
+InputStatus MovementPhase_Run(GameManager *gm);
 
 /**
  * @brief Determine whether a given player has at least one legal move available.
@@ -100,8 +101,8 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY);
  * Displays errors when the chosen penguin or movement is invalid.
  *
  * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the active player.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex);
+InputStatus Player_Movement_Turn(GameManager *gm);
 
 #endif
