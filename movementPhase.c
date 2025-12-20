@@ -134,10 +134,10 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             0, gb->boardHeight - 1,
             &startX, &startY);
 
-        if (status == INPUT_SAVE)
+        if (status == INPUT_EXIT)
         {
-            printf(MSG_GAME_SAVED);
-            //SAVE GAME
+            printf(MSG_GAME_CLOSED);
+            //CLOSE
             continue;
         }
 
@@ -147,10 +147,10 @@ void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
             0, gb->boardHeight - 1,
             &endX, &endY);
 
-        if (status == INPUT_SAVE)
+        if (status == INPUT_EXIT)
         {
-            printf(MSG_GAME_SAVED);
-            //SAVE GAME
+            printf(MSG_GAME_CLOSED);
+            //CLOSE
             continue;
         }
 

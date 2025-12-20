@@ -3,9 +3,7 @@
 
 typedef enum {
     INPUT_VALID = 0,
-    INPUT_SAVE,
     INPUT_EXIT,
-    INPUT_SAVE_AND_EXIT
 } InputStatus;
 
 InputStatus GetIntegerInRange(const char* prompt, int min, int max, int* out_value);

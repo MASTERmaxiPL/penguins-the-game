@@ -14,7 +14,7 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
     char buffer[100];
 
     while (1) {
-        printf(prompt, min, max);
+        printf("%s", prompt);
 
         if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
             return INPUT_EXIT;
@@ -24,10 +24,7 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
             ClearInputBuffer();
         }
 
-        if (strcmp(buffer, "s\n") == 0) return INPUT_SAVE;
         if (strcmp(buffer, "x\n") == 0) return INPUT_EXIT;
-        if (strcmp(buffer, "sx\n") == 0 || strcmp(buffer, "xs\n") == 0)
-            return INPUT_SAVE_AND_EXIT;
 
         char* endptr;
         const long input = strtol(buffer, &endptr, 10);
@@ -65,10 +62,17 @@ InputStatus GetCoordinatesInRange(
             ClearInputBuffer();
         }
 
-        if (strcmp(buffer, "s\n") == 0) return INPUT_SAVE;
-        if (strcmp(buffer, "x\n") == 0) return INPUT_EXIT;
         if (strcmp(buffer, "sx\n") == 0 || strcmp(buffer, "xs\n") == 0)
-            return INPUT_SAVE_AND_EXIT;
+        {
+            //SAVE GAME
+            return INPUT_EXIT;
+        }
+        if (strcmp(buffer, "s\n") == 0)
+        {
+            //SAVE GAME
+            continue;
+        }
+        if (strcmp(buffer, "x\n") == 0) return INPUT_EXIT;
 
         int inputX, inputY;
 

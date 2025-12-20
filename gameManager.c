@@ -42,27 +42,31 @@ static void Print_Final_Scores(const GameManager *gm);
 void GameManager_Init(GameManager *gm) {
     int boardWidth;
     int boardHeight;
+    char prompt[TEXT_BUFFER_SIZE];
     InputStatus status;
 
-    status = GetIntegerInRange(MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount, &gm->numOfPlayers);
-    if (status == INPUT_SAVE)
+    snprintf(prompt, sizeof(prompt), MSG_ENTER_NUMBER_OF_PLAYERS, minPlayerCount, maxPlayerCount);
+    status = GetIntegerInRange(prompt, minPlayerCount, maxPlayerCount, &gm->numOfPlayers);
+    if (status == INPUT_EXIT)
     {
-        printf(MSG_GAME_SAVED);
-        //SAVE GAME
+        printf(MSG_GAME_CLOSED);
+        //CLOSE
     }
 
-    status = GetIntegerInRange(MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth, &boardWidth);
-    if (status == INPUT_SAVE)
+    snprintf(prompt, sizeof(prompt), MSG_ENTER_BOARD_WIDTH, minWidth, maxWidth);
+    status = GetIntegerInRange(prompt, minWidth, maxWidth, &boardWidth);
+    if (status == INPUT_EXIT)
     {
-        printf(MSG_GAME_SAVED);
-        //SAVE GAME
+        printf(MSG_GAME_CLOSED);
+        //CLOSE
     }
 
-    status = GetIntegerInRange(MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight, &boardHeight);
-    if (status == INPUT_SAVE)
+    snprintf(prompt, sizeof(prompt), MSG_ENTER_BOARD_HEIGHT, minHeight, maxHeight);
+    status = GetIntegerInRange(prompt, minHeight, maxHeight, &boardHeight);
+    if (status == INPUT_EXIT)
     {
-        printf(MSG_GAME_SAVED);
-        //SAVE GAME
+        printf(MSG_GAME_CLOSED);
+        //CLOSE
     }
 
     GameBoard_Init(&gm->gb, boardWidth, boardHeight);
@@ -77,11 +81,12 @@ void GameManager_Init(GameManager *gm) {
 
     const int maxPenguins = floor(gm->gb.placeableFloeCount / gm->numOfPlayers);
 
-    status = GetIntegerInRange(MSG_ENTER_NUMBERS_OF_PENGUINS, 1, maxPenguins, &gm->penguinsPerPlayer);
-    if (status == INPUT_SAVE)
+    snprintf(prompt, sizeof(prompt), MSG_ENTER_NUMBERS_OF_PENGUINS, 1, maxPenguins);
+    status = GetIntegerInRange(prompt, 1, maxPenguins, &gm->penguinsPerPlayer);
+    if (status == INPUT_EXIT)
     {
-        printf(MSG_GAME_SAVED);
-        //SAVE GAME
+        printf(MSG_GAME_CLOSED);
+        //CLOSE
     }
 
     printf(MSG_INITIALIZED);

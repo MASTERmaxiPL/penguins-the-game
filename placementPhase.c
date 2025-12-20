@@ -71,10 +71,10 @@ void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
                                                    0, gm->gb.boardHeight - 1,
                                                    &x, &y);
 
-        if (status == INPUT_SAVE)
+        if (status == INPUT_EXIT)
         {
-            printf(MSG_GAME_SAVED);
-            //SAVE GAME
+            printf(MSG_GAME_CLOSED);
+            //CLOSE
             continue;
         }
 

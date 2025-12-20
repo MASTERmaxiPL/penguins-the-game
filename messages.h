@@ -5,6 +5,8 @@
 #ifndef PENGUINS_THE_GAME_MESSAGES_H
 #define PENGUINS_THE_GAME_MESSAGES_H
 
+#define TEXT_BUFFER_SIZE 128
+
 // General Messages
 #define MSG_WELCOME "Welcome to Penguins the Game!\n"
 #define MSG_INITIALIZING "Initializing...\n"
