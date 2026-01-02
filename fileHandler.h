@@ -3,7 +3,7 @@
 
 #include "gameManager.h"
 
-void Save_GameFile(GameManager *gm);
+void Save_GameFile(const GameManager *gm);
 void Load_GameFile(GameManager *gm);
 
 #endif

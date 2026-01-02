@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 
+#include "fileHandler.h"
+
 /**
  * @brief Run the full placement phase of the game.
  *
@@ -37,6 +39,7 @@ InputStatus PlacementPhase_Run(GameManager *gm) {
             Print_Board(&gm->gb);
             const InputStatus status = Player_Placement_Turn(gm, currentPlayerIndex);
             if (status == INPUT_EXIT) return status;
+            Save_GameFile(gm);
         }
     }
 
