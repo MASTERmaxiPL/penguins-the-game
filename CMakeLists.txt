@@ -21,6 +21,29 @@ project(penguins_the_game C)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Minimum CMake policy version for fetched projects" FORCE)
+endif()
+
+include(FetchContent)
+
+# Include external libraries( as static libs)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
+
+FetchContent_Declare(
+        cJSON
+        GIT_REPOSITORY  https://github.com/DaveGamble/cJSON.git
+        GIT_TAG         master
+)
+
+FetchContent_MakeAvailable(cjson)
+
+if(TARGET cjson)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(cjson PRIVATE -Wno-error=float-conversion -Wno-float-conversion)
+    endif()
+endif()
+
 # /**
 #  * @brief Define the main executable and its source files.
 #  *
@@ -44,4 +67,8 @@ add_executable(penguins_the_game main.c
         noise.c
         inputHandler.c
         inputHandler.h
+        fileHandler.c
+        fileHandler.h
 )
+
+target_link_libraries(penguins_the_game PRIVATE cjson)
