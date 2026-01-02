@@ -91,7 +91,6 @@ static cJSON* create_board_object(const GameManager *gm) {
  */
 void Save_GameFile(const GameManager *gm) {
     cJSON *json = cJSON_CreateObject();
-    if (!json) return;
 
     cJSON_AddNumberToObject(json, "numOfPlayers", gm->numOfPlayers);
     cJSON_AddItemToObject(json, "playersScore", create_players_score_array(gm));
