@@ -1,3 +1,11 @@
+/** fileHandler.c
+ * @brief Implements functions to save and load cJSON objects to/from files.
+ *  *
+ * This module provides two main functions:
+ *  - SaveJsonToFile: Saves a cJSON object to a specified file in JSON format.
+ *  - LoadJsonFromFile: Loads a cJSON object from a specified file containing JSON data.
+ */
+
 #include "fileHandler.h"
 
 #include <stdio.h>

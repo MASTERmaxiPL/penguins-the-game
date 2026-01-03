@@ -1,6 +1,8 @@
-//
-// Created by user on 19.12.2025.
-//
+/**
+ * @file messages.h
+ * @brief This file contains all the message strings used in the Penguins the Game application.
+ * It centralizes message definitions for easy management and localization.
+ */
 
 #ifndef PENGUINS_THE_GAME_MESSAGES_H
 #define PENGUINS_THE_GAME_MESSAGES_H

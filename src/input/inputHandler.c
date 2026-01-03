@@ -1,3 +1,9 @@
+/** inputHandler.c
+ *
+ * Handles user input for integers and coordinates with validation.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

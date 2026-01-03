@@ -1,6 +1,13 @@
 #ifndef PENGUINS_THE_GAME_FILEHANDLER_H
 #define PENGUINS_THE_GAME_FILEHANDLER_H
 
+/** * @file fileHandler.h
+ * @brief Declares functions for saving and loading game state in JSON format.
+ *
+ * This module provides functionality to serialize the game state to a JSON
+ * file and deserialize it back into the game's data structures.
+ */
+
 #include "../../cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 /**

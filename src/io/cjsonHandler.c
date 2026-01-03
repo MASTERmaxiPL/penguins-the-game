@@ -1,3 +1,7 @@
+/** * @file cjsonHandler.c
+ * @brief Functions to serialize and deserialize GameManager to/from cJSON.
+ */
+
 #include "cjsonHandler.h"
 
 #include <stdlib.h>
