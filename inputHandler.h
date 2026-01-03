@@ -15,7 +15,10 @@
  */
 typedef enum {
     INPUT_VALID = 0,
+    INPUT_SAVE,
+    INPUT_SAVE_AND_EXIT,
     INPUT_EXIT,
+    INPUT_LOADED,
     INPUT_ERROR_INIT_FAILED
 } InputStatus;
 

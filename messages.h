@@ -32,6 +32,7 @@
 
 // Game Running Messages
 #define MSG_TRYING_TO_RUN "Trying to run...\n"
+#define MSG_LOADED_GAME "Resuming loaded game...\n"
 #define MSG_GAME_RUNNING "Game running...\n"
 
 // Turn Messages

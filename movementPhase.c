@@ -20,29 +20,35 @@
  * consecutively blocked, the movement phase ends.
  *
  * @param gm Pointer to the GameManager (read-only).
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
  * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus MovementPhase_Run(GameManager *gm) {
-    int blocked_counter = 0;
-    int currentPlayerIndex = -1;
-    int roundCounter = 1;
+InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
+    int *playerIndex = &gm->currentPlayerIndex;
+    int *round = &gm->currentRound;
 
-    printf(MSG_ROUND, roundCounter);
+    if (!isLoadedGame) {
+        *round = 1;
+        *playerIndex = 0;
+    }
+
+    int blocked_counter = 0;
+
+    printf(MSG_MOVEMENT_PHASE);
+    printf(MSG_ROUND, *round);
 
     do {
-        currentPlayerIndex++;
-
-        if (currentPlayerIndex >= gm->numOfPlayers) {
-            currentPlayerIndex = 0;
-            roundCounter++;
-            printf(MSG_ROUND, roundCounter);
+        if (*playerIndex >= gm->numOfPlayers) {
+            gm->currentPlayerIndex = 0;
+            (*round)++;
+            printf(MSG_ROUND, *round);
         }
 
-        printf(MSG_PLAYER_TURN, currentPlayerIndex + 1);
+        printf(MSG_PLAYER_TURN, *playerIndex + 1);
 
-        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
+        if (!Check_Player_Has_Any_Moves(&gm->gb, *playerIndex)) {
             blocked_counter++;
-            printf(MSG_PLAYER_NO_AVAILABLE_MOVES, currentPlayerIndex + 1);
+            printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
         } else {
             blocked_counter = 0;
             const InputStatus status = Player_Movement_Turn(gm);
@@ -53,6 +59,7 @@ InputStatus MovementPhase_Run(GameManager *gm) {
             printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
+        (*playerIndex)++;
     } while (1);
     return INPUT_VALID;
 }
@@ -131,23 +138,29 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
     int startX, startY, endX, endY;
 
     while(1){
-         status = GetCoordinatesInRange(
+        Print_Board(gb);
+        status = GetCoordinatesInRange(
             MSG_CHOOSE_PENGUIN,
             0, gb->boardWidth - 1,
             0, gb->boardHeight - 1,
             &startX, &startY);
-        if (status == INPUT_EXIT) return status;
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
         status = GetCoordinatesInRange(
             MSG_CHOOSE_DESTINATION,
             0, gb->boardWidth - 1,
             0, gb->boardHeight - 1,
             &endX, &endY);
-        if (status == INPUT_EXIT) return status;
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
             printf(MSG_MOVE_SUCCESSFUL);
-            Print_Board(gb);
             break;
         }
         printf(MSG_INVALID_MOVE);

@@ -14,8 +14,6 @@
 
 #include <stdio.h>
 
-#include "fileHandler.h"
-
 /**
  * @brief Run the full placement phase of the game.
  *
@@ -26,21 +24,30 @@
  *  - Places the penguin and awards fish.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
  * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus PlacementPhase_Run(GameManager *gm) {
+InputStatus PlacementPhase_Run(GameManager *gm, const bool isLoadedGame) {
+    int *playerIndex = &gm->currentPlayerIndex;
+    int *round = &gm->currentRound;
+
+    if (!isLoadedGame)
+    {
+        *playerIndex = 0;
+        *round = 1;
+    }
     printf(MSG_PLACEMENT_PHASE);
 
-    for (int round = 1; round < gm->penguinsPerPlayer + 1; round++) {
-        printf(MSG_ROUND, round);
+    for (;*round < gm->penguinsPerPlayer + 1; (*round)++) {
+        printf(MSG_ROUND, *round);
 
-        for (int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
-            printf(MSG_PLAYER_TURN, currentPlayerIndex+1);
+        for (;*playerIndex < gm->numOfPlayers; (*playerIndex)++) {
+            printf(MSG_PLAYER_TURN, *playerIndex + 1);
             Print_Board(&gm->gb);
-            const InputStatus status = Player_Placement_Turn(gm, currentPlayerIndex);
+            const InputStatus status = Player_Placement_Turn(gm);
             if (status == INPUT_EXIT) return status;
-            Save_GameFile(gm);
         }
+        *playerIndex = 0;
     }
 
     printf(MSG_PLACEMENT_PHASE_FINISHED);
@@ -64,10 +71,9 @@ InputStatus PlacementPhase_Run(GameManager *gm) {
  * If valid, Player_Place() is called to perform the placement.
  *
  * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the player taking the turn.
  * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
+InputStatus Player_Placement_Turn(GameManager *gm)
 {
     int x, y;
 
@@ -78,12 +84,15 @@ InputStatus Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
                                                    0, gm->gb.boardHeight - 1,
                                                    &x, &y);
 
-        if (status == INPUT_EXIT) return status;
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
         if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
-            Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
+            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y);
             break;
         }
 

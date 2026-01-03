@@ -96,13 +96,11 @@ InputStatus GetCoordinatesInRange(
 
         if (strcmp(buffer, "sx\n") == 0 || strcmp(buffer, "xs\n") == 0)
         {
-            //SAVE GAME
-            return INPUT_EXIT;
+            return INPUT_SAVE_AND_EXIT;
         }
         if (strcmp(buffer, "s\n") == 0)
         {
-            //SAVE GAME
-            continue;
+            return INPUT_SAVE;
         }
         if (strcmp(buffer, "x\n") == 0) return INPUT_EXIT;
 

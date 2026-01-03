@@ -19,9 +19,10 @@
  * @brief Run the movement phase until all players become blocked.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
  * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus MovementPhase_Run(GameManager *gm);
+InputStatus MovementPhase_Run(GameManager *gm, bool isLoadedGame);
 
 /**
  * @brief Determine whether a given player has at least one legal move available.

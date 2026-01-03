@@ -39,10 +39,18 @@ int main() {
             break;
         }
 
-        if (status == INPUT_VALID)
+        if (status == INPUT_VALID || status == INPUT_LOADED)
         {
-            printf(MSG_TRYING_TO_RUN);
-            GameManager_Run(&game);
+            if (status == INPUT_LOADED)
+            {
+                printf(MSG_LOADED_GAME);
+                GameManager_Run(&game, true);
+            }
+            else
+            {
+                printf(MSG_TRYING_TO_RUN);
+                GameManager_Run(&game, false);
+            }
 
             printf(MSG_GAME_FINISHED);
             GameManager_Cleanup(&game);

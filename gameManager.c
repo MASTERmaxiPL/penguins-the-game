@@ -7,12 +7,15 @@
  * manages the placement and movement phases, and shuts down the game cleanly.
  */
 
-#include "boardGenerator.h"
 #include "gameManager.h"
-#include "inputHandler.h"
+#include "boardGenerator.h"
 #include "messages.h"
 #include "movementPhase.h"
 #include "placementPhase.h"
+#include "cjsonHandler.h"
+#include "fileHandler.h"
+
+#include "cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -57,8 +60,8 @@ InputStatus GameManager_Init(GameManager *gm) {
         if (status == INPUT_EXIT) return status;
 
         if (choice == loadGameOption) {
-            // LOAD GAME
-            return INPUT_EXIT;
+            GameManager_LoadFromFile(gm, "..\\data.json");
+            return INPUT_LOADED;
         }
 
         if (choice == newGameOption) {
@@ -187,23 +190,25 @@ static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm){
  * After both phases finish once, the game ends.
  *
  * @param gm Pointer to the initialized GameManager.
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
  */
-void GameManager_Run(GameManager *gm) {
+void GameManager_Run(GameManager *gm, bool isLoadedGame) {
     InputStatus status;
     printf(MSG_GAME_RUNNING);
     while (gm->isRunning) {
         if (gm->currentPhase == PHASE_PLACEMENT)
         {
-            status = PlacementPhase_Run(gm);
+            status = PlacementPhase_Run(gm, isLoadedGame);
             gm->currentPhase = PHASE_MOVEMENT;
             if (status == INPUT_EXIT) {
                 gm->isRunning = false;
                 return;
             }
+            isLoadedGame = false;
         }
         if (gm->currentPhase == PHASE_MOVEMENT)
         {
-            status = MovementPhase_Run(gm);
+            status = MovementPhase_Run(gm, isLoadedGame);
             if (status == INPUT_EXIT) {
                 gm->isRunning = false;
                 return;
@@ -247,4 +252,24 @@ static void Print_Final_Scores(const GameManager *gm) {
     }
 
     printf(MSG_WINNER, best + 1, gm->playersScore[best]);
+}
+
+bool GameManager_SaveToFile(const GameManager *gm, const char *path) {
+    printf("SAVING...\n");
+    if (!gm || !path) return false;
+    cJSON *json = CJSON_CreateFromGameManager(gm);
+    if (!json) return false;
+    const bool ok = SaveJsonToFile(json, path);
+    cJSON_Delete(json);
+    printf("GAME SAVED!\n");
+    return ok;
+}
+
+bool GameManager_LoadFromFile(GameManager *gm, const char *path) {
+    if (!gm || !path) return false;
+    cJSON *json = LoadJsonFromFile(path);
+    if (!json) return false;
+    const int res = CJSON_LoadGameManagerFromJson(gm, json);
+    cJSON_Delete(json);
+    return res == 0;
 }

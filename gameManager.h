@@ -42,6 +42,8 @@ typedef struct {
     int penguinsPerPlayer; /**< Number of penguins each player places during setup. */
     bool isRunning;        /**< Main loop control flag for GameManager_Run(). */
     GamePhase currentPhase;  /**< Current phase of the game being executed. */
+    int currentPlayerIndex; /**< Index of the player whose turn it is currently. */
+    int currentRound;       /**< Current round number in the game. */
 } GameManager;
 
 /**
@@ -60,9 +62,10 @@ InputStatus GameManager_Init(GameManager *gm);
  * Continues running until internal state sets `isRunning` to false.
  *
  * @param gm Pointer to the GameManager to run.
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
  * returns InputStatus indicating success or failure of the game run.
  */
-void GameManager_Run(GameManager *gm);
+void GameManager_Run(GameManager *gm, bool isLoadedGame);
 
 /**
  * @brief Clean up all allocated resources owned by the GameManager.
@@ -72,5 +75,9 @@ void GameManager_Run(GameManager *gm);
  * @param gm Pointer to the GameManager to clean up.
  */
 void GameManager_Cleanup(GameManager *gm);
+
+bool GameManager_SaveToFile(const GameManager *gm, const char *path);
+
+bool GameManager_LoadFromFile(GameManager *gm, const char *path);
 
 #endif
