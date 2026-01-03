@@ -38,6 +38,7 @@ static InputStatus Get_Game_Settings(GameManager *gm, int *outWidth, int *outHei
 static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm);
 static InputStatus Initialize_New_Board(GameManager *gm, const int boardWidth, const int boardHeight);
 static void Print_Final_Scores(const GameManager *gm);
+static bool GameManager_LoadFromFile(GameManager *gm, const char *path);
 
 /**
  * @brief Initialize the GameManager and prompt the user for game setup values.
@@ -237,6 +238,11 @@ void GameManager_Cleanup(GameManager *gm) {
     printf(MSG_GAME_CLEANED);
 }
 
+/**
+ * @brief Print the final scores of all players and announce the winner.
+ *
+ * @param gm Pointer to the GameManager containing player scores.
+ */
 static void Print_Final_Scores(const GameManager *gm) {
     printf(MSG_FINAL_SCORES);
 
@@ -254,6 +260,13 @@ static void Print_Final_Scores(const GameManager *gm) {
     printf(MSG_WINNER, best + 1, gm->playersScore[best]);
 }
 
+/**
+ * @brief Save the current game state to a file in JSON format.
+ *
+ * @param gm Pointer to the GameManager containing the game state.
+ * @param path File path where the game state should be saved.
+ * @return true if saving was successful, false otherwise.
+ */
 bool GameManager_SaveToFile(const GameManager *gm, const char *path) {
     printf("SAVING...\n");
     if (!gm || !path) return false;
@@ -265,7 +278,14 @@ bool GameManager_SaveToFile(const GameManager *gm, const char *path) {
     return ok;
 }
 
-bool GameManager_LoadFromFile(GameManager *gm, const char *path) {
+/**
+ * @brief Load a game state from a file in JSON format.
+ *
+ * @param gm Pointer to the GameManager to load the game state into.
+ * @param path File path from which the game state should be loaded.
+ * @return true if loading was successful, false otherwise.
+ */
+static bool GameManager_LoadFromFile(GameManager *gm, const char *path) {
     if (!gm || !path) return false;
     cJSON *json = LoadJsonFromFile(path);
     if (!json) return false;

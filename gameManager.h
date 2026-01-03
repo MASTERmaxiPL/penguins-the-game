@@ -76,8 +76,13 @@ void GameManager_Run(GameManager *gm, bool isLoadedGame);
  */
 void GameManager_Cleanup(GameManager *gm);
 
+/**
+ * @brief Save the current game state to a file in JSON format.
+ *
+ * @param gm Pointer to the GameManager containing the game state.
+ * @param path File path where the game state should be saved.
+ * @return true if saving was successful, false otherwise.
+ */
 bool GameManager_SaveToFile(const GameManager *gm, const char *path);
-
-bool GameManager_LoadFromFile(GameManager *gm, const char *path);
 
 #endif

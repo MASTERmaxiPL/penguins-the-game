@@ -74,6 +74,12 @@ static cJSON* create_board_object(const GameManager *gm) {
     return boardObj;
 }
 
+/**
+ * @brief Serialize the GameManager into a cJSON object.
+ *
+ * @param gm Pointer to the GameManager to serialize.
+ * @return cJSON object representing the GameManager.
+ */
 cJSON* CJSON_CreateFromGameManager(const GameManager *gm) {
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "numOfPlayers", gm->numOfPlayers);
@@ -97,7 +103,11 @@ cJSON* CJSON_CreateFromGameManager(const GameManager *gm) {
     return json;
 }
 
-/* Helper to map phase string -> enum */
+/** * @brief Parse a phase string into its corresponding enum value.
+ *
+ * @param s Phase string to parse.
+ * @return Corresponding Phase enum value.
+ */
 static int parse_phase_string(const char *s) {
     if (strcmp(s, "PHASE_INIT") == 0) return PHASE_INIT;
     if (strcmp(s, "PHASE_PLACEMENT") == 0) return PHASE_PLACEMENT;
@@ -105,8 +115,13 @@ static int parse_phase_string(const char *s) {
     return PHASE_CLEANUP;
 }
 
-/* Basic deserialization. Attempts to populate gm. On error returns non-zero.
-   It allocates gm->playersScore and gm->gb.floeGrid; caller must free with GameManager_Cleanup. */
+/**
+ * @brief Load the GameManager state from a cJSON object.
+ *
+ * @param gm Pointer to the GameManager to populate.
+ * @param json cJSON object containing the serialized GameManager state.
+ * @return true if loading was successful, false otherwise.
+ */
 bool CJSON_LoadGameManagerFromJson(GameManager *gm, const cJSON *json) {
     if (!gm || !json) return false;
 
@@ -143,7 +158,6 @@ bool CJSON_LoadGameManagerFromJson(GameManager *gm, const cJSON *json) {
     item = cJSON_GetObjectItemCaseSensitive(json, "currentRound");
     gm->currentRound = cJSON_IsNumber(item) ? item->valueint : 0;
 
-    /* Board */
     const cJSON *gbObj = cJSON_GetObjectItemCaseSensitive(json, "gb");
     if (!cJSON_IsObject(gbObj)) return false;
 
@@ -154,15 +168,13 @@ bool CJSON_LoadGameManagerFromJson(GameManager *gm, const cJSON *json) {
     tmp = cJSON_GetObjectItemCaseSensitive(gbObj, "placeableFloeCount");
     gm->gb.placeableFloeCount = cJSON_IsNumber(tmp) ? tmp->valueint : 0;
 
-    /* allocate grid */
-    int h = gm->gb.boardHeight, w = gm->gb.boardWidth;
-    if (h > 0 && w > 0) {
-        gm->gb.floeGrid = calloc(h, sizeof(IceFloe*));
+    const int height = gm->gb.boardHeight, width = gm->gb.boardWidth;
+    if (height > 0 && width > 0) {
+        gm->gb.floeGrid = calloc(height, sizeof(IceFloe*));
         if (!gm->gb.floeGrid) return false;
-        for (int r = 0; r < h; ++r) {
-            gm->gb.floeGrid[r] = calloc(w, sizeof(IceFloe));
+        for (int r = 0; r < height; ++r) {
+            gm->gb.floeGrid[r] = calloc(width, sizeof(IceFloe));
             if (!gm->gb.floeGrid[r]) {
-                /* cleanup partial allocation */
                 for (int k = 0; k < r; ++k) free(gm->gb.floeGrid[k]);
                 free(gm->gb.floeGrid);
                 gm->gb.floeGrid = NULL;
@@ -175,11 +187,11 @@ bool CJSON_LoadGameManagerFromJson(GameManager *gm, const cJSON *json) {
             int row = 0;
             cJSON *rowIt = NULL;
             cJSON_ArrayForEach(rowIt, gridArr) {
-                if (row >= h) break;
+                if (row >= height) break;
                 cJSON *colIt = NULL;
                 int col = 0;
                 cJSON_ArrayForEach(colIt, rowIt) {
-                    if (col >= w) break;
+                    if (col >= width) break;
                     const cJSON *isFloating = cJSON_GetObjectItemCaseSensitive(colIt, "isFloating");
                     const cJSON *fishCount = cJSON_GetObjectItemCaseSensitive(colIt, "fishCount");
                     const cJSON *occupantId = cJSON_GetObjectItemCaseSensitive(colIt, "occupantId");
