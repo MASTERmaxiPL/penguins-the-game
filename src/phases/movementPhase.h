@@ -1,8 +1,8 @@
 #ifndef MOVEMENT_PHASE_H
 #define MOVEMENT_PHASE_H
 
-#include "gameBoard.h"
-#include "gameManager.h"
+#include "../core/gameBoard.h"
+#include "../core/gameManager.h"
 
 /**
  * @file movementPhase.h

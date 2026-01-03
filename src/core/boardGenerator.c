@@ -9,8 +9,8 @@
  */
 
 #include "boardGenerator.h"
-#include "messages.h"
-#include "noise.h"
+#include "../common/messages.h"
+#include "../utils/noise.h"
 
 #include <stdio.h>
 #include <stdlib.h>

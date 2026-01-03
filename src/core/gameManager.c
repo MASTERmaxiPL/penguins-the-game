@@ -9,13 +9,13 @@
 
 #include "gameManager.h"
 #include "boardGenerator.h"
-#include "messages.h"
-#include "movementPhase.h"
-#include "placementPhase.h"
-#include "cjsonHandler.h"
-#include "fileHandler.h"
+#include "../common/messages.h"
+#include "../phases/movementPhase.h"
+#include "../phases/placementPhase.h"
+#include "../io/cjsonHandler.h"
+#include "../io/fileHandler.h"
 
-#include "cmake-build-debug/_deps/cjson-src/cJSON.h"
+#include "../../cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -61,7 +61,7 @@ InputStatus GameManager_Init(GameManager *gm) {
         if (status == INPUT_EXIT) return status;
 
         if (choice == loadGameOption) {
-            GameManager_LoadFromFile(gm, "..\\data.json");
+            GameManager_LoadFromFile(gm, "..\\saves\\data.json");
             return INPUT_LOADED;
         }
 

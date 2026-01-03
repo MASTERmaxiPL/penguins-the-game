@@ -5,8 +5,8 @@
 #ifndef PENGUINS_THE_GAME_CJSONHANDLER_H
 #define PENGUINS_THE_GAME_CJSONHANDLER_H
 
-#include "gameManager.h"
-#include "cmake-build-debug/_deps/cjson-src/cJSON.h"
+#include "../core/gameManager.h"
+#include "../../cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 /**
  * @brief Serialize the GameManager into a cJSON object.

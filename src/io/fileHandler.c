@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cmake-build-debug/_deps/cjson-src/cJSON.h"
+#include "../../cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 /**
  * Saves a cJSON object to a file in JSON format.

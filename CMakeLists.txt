@@ -53,24 +53,24 @@ endif()
 #  *
 #  * @note If you add or remove source files, update this list accordingly.
 #  */
-add_executable(penguins_the_game main.c
-        gameManager.c
-        gameManager.h
-        boardGenerator.c
-        boardGenerator.h
-        placementPhase.c
-        placementPhase.h
-        movementPhase.c
-        movementPhase.h
-        iceFloe.h
-        gameBoard.h
-        noise.c
-        inputHandler.c
-        inputHandler.h
-        fileHandler.c
-        fileHandler.h
-        cjsonHandler.c
-        cjsonHandler.h
+add_executable(penguins_the_game src/main.c
+        src/core/gameManager.c
+        src/core/gameManager.h
+        src/core/boardGenerator.c
+        src/core/boardGenerator.h
+        src/phases/placementPhase.c
+        src/phases/placementPhase.h
+        src/phases/movementPhase.c
+        src/phases/movementPhase.h
+        src/core/iceFloe.h
+        src/core/gameBoard.h
+        src/utils/noise.c
+        src/input/inputHandler.c
+        src/input/inputHandler.h
+        src/io/fileHandler.c
+        src/io/fileHandler.h
+        src/io/cjsonHandler.c
+        src/io/cjsonHandler.h
 )
 
 target_link_libraries(penguins_the_game PRIVATE cjson)

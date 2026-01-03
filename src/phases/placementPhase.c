@@ -8,9 +8,9 @@
  */
 
 #include "placementPhase.h"
-#include "boardGenerator.h"
-#include "inputHandler.h"
-#include "messages.h"
+#include "../core/boardGenerator.h"
+#include "../input/inputHandler.h"
+#include "../common/messages.h"
 
 #include <stdio.h>
 
@@ -85,7 +85,7 @@ InputStatus Player_Placement_Turn(GameManager *gm)
                                                    &x, &y);
 
         if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
-            GameManager_SaveToFile(gm, "..\\data.json");
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
         if (status == INPUT_SAVE) continue;
         if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 

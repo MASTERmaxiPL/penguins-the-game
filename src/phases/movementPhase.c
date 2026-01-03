@@ -5,12 +5,12 @@
  */
 
 #include "movementPhase.h"
-#include "boardGenerator.h"
-#include "messages.h"
+#include "../core/boardGenerator.h"
+#include "../common/messages.h"
 
 #include <stdio.h>
 
-#include "inputHandler.h"
+#include "../input/inputHandler.h"
 
 /**
  * @brief Run the movement phase until all players are blocked.
@@ -145,7 +145,7 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
             0, gb->boardHeight - 1,
             &startX, &startY);
         if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
-            GameManager_SaveToFile(gm, "..\\data.json");
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
         if (status == INPUT_SAVE) continue;
         if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
@@ -155,7 +155,7 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
             0, gb->boardHeight - 1,
             &endX, &endY);
         if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
-            GameManager_SaveToFile(gm, "..\\data.json");
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
         if (status == INPUT_SAVE) continue;
         if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 

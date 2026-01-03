@@ -1,7 +1,7 @@
 #ifndef PENGUINS_THE_GAME_FILEHANDLER_H
 #define PENGUINS_THE_GAME_FILEHANDLER_H
 
-#include "cmake-build-debug/_deps/cjson-src/cJSON.h"
+#include "../../cmake-build-debug/_deps/cjson-src/cJSON.h"
 
 /**
  * Saves a cJSON object to a file in JSON format.

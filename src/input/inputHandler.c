@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "inputHandler.h"
-#include "messages.h"
+#include "../common/messages.h"
 
 #define INPUT_BUFFER_SIZE 20
 

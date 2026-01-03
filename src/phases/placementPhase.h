@@ -1,8 +1,8 @@
 #ifndef PLACEMENT_PHASE_H
 #define PLACEMENT_PHASE_H
 
-#include "gameBoard.h"
-#include "gameManager.h"
+#include "../core/gameBoard.h"
+#include "../core/gameManager.h"
 
 /**
  * @file placementPhase.h

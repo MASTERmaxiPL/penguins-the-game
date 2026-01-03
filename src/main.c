@@ -9,8 +9,8 @@
  *  - And allows the user to replay the game if desired.
  */
 
-#include "gameManager.h"
-#include "messages.h"
+#include "core/gameManager.h"
+#include "common/messages.h"
 
 #include <stdio.h>
 

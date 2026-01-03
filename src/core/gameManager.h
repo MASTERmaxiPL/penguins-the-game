@@ -2,7 +2,7 @@
 #define GAME_MANAGER_H
 
 #include "gameBoard.h"
-#include "inputHandler.h"
+#include "../input/inputHandler.h"
 
 /**
  * @file gameManager.h
