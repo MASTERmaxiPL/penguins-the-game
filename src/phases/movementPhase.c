@@ -149,6 +149,13 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
         if (status == INPUT_SAVE) continue;
         if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
+        IceFloe *start = &gb->floeGrid[startY][startX];
+
+        if (start->occupantId == -1 ||start->occupantId != gm->currentPlayerIndex ||!Check_Penguin_Has_Any_Moves(gb, startX, startY,gb->boardHeight, gb->boardWidth)) {
+            printf(MSG_INVALID_MOVE);
+            continue;
+        }
+
         status = GetCoordinatesInRange(
             MSG_CHOOSE_DESTINATION,
             0, gb->boardWidth - 1,
@@ -198,6 +205,8 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
 
     const int playerId = gb->floeGrid[startY][startX].occupantId;
     if (playerId == -1) return false;
+
+    if (playerId != gm->currentPlayerIndex) return false;
     
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
