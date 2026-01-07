@@ -8,9 +8,7 @@
  */
 
 #include "placementPhase.h"
-#include "../core/boardGenerator.h"
-#include "../input/inputHandler.h"
-#include "../common/messages.h"
+#include "boardGenerator.h"
 
 #include <stdio.h>
 
@@ -24,39 +22,26 @@
  *  - Places the penguin and awards fish.
  *
  * @param gm Pointer to the GameManager controlling the game.
- * @param isLoadedGame Indicates if the game was loaded from a saved state.
- * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus PlacementPhase_Run(GameManager *gm, const bool isLoadedGame) {
-    int *playerIndex = &gm->currentPlayerIndex;
-    int *round = &gm->currentRound;
+void PlacementPhase_Run(GameManager *gm) {
+    printf("Placement Phase\n");
 
-    if (!isLoadedGame)
-    {
-        *playerIndex = 0;
-        *round = 1;
-    }
-    printf(MSG_PLACEMENT_PHASE);
+    for (int turn = 1; turn < gm->penguinsPerPlayer + 1; turn++) {
+        printf("Turn %d\n", turn);
 
-    for (;*round < gm->penguinsPerPlayer + 1; (*round)++) {
-        printf(MSG_ROUND, *round);
-
-        for (;*playerIndex < gm->numOfPlayers; (*playerIndex)++) {
-            printf(MSG_PLAYER_TURN, *playerIndex + 1);
+        for (int currentPlayerIndex = 0; currentPlayerIndex < gm->numOfPlayers; currentPlayerIndex++) {
             Print_Board(&gm->gb);
-            const InputStatus status = Player_Placement_Turn(gm);
-            if (status == INPUT_EXIT) return status;
+            Player_Placement_Turn(gm, currentPlayerIndex);
         }
-        *playerIndex = 0;
     }
 
-    printf(MSG_PLACEMENT_PHASE_FINISHED);
+    printf("Placement Phase finished successfully!\n");
     Print_Board(&gm->gb);
 
     for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        printf("Player %d has %d fish after placement phase.\n",
+               i + 1, gm->playersScore[i]);
     }
-    return INPUT_VALID;
 }
 
 /**
@@ -71,34 +56,37 @@ InputStatus PlacementPhase_Run(GameManager *gm, const bool isLoadedGame) {
  * If valid, Player_Place() is called to perform the placement.
  *
  * @param gm Pointer to GameManager.
- * @return InputStatus indicating success or failure of initialization.
+ * @param currentPlayerIndex Index of the player taking the turn.
  */
-InputStatus Player_Placement_Turn(GameManager *gm)
+void Player_Placement_Turn(GameManager *gm, const int currentPlayerIndex)
 {
     int x, y;
 
     while (1)
     {
-        const InputStatus status = GetCoordinatesInRange(MSG_ENTER_COORDINATES,
-                                                   0, gm->gb.boardWidth - 1,
-                                                   0, gm->gb.boardHeight - 1,
-                                                   &x, &y);
+        printf("Player %d, put your x y coordinates: \n", currentPlayerIndex + 1);
+        const int inputCount = scanf("%d %d", &x, &y);
 
-        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
-            GameManager_SaveToFile(gm, "..\\saves\\data.json");
-        if (status == INPUT_SAVE) continue;
-        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
+        if (inputCount != 2) {
+            printf("Invalid input! Please enter two integers.\n");
+            while (getchar() != '\n'){}
+            continue;
+        }
+
+        if (x >= gm->gb.boardWidth || y >= gm->gb.boardHeight || x < 0 || y < 0) {
+            printf("Your coordinates are out of bounds!\n");
+            continue;
+        }
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
         if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
-            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y);
+            Player_Place(currentPlayerIndex, gm->playersScore, floe, x, y);
             break;
         }
 
-        printf(MSG_TILE_NOT_AVAILABLE, x, y);
+        printf("You cannot place your penguin here. Try again! (%d,%d)!\n", x, y);
     }
-    return INPUT_VALID;
 }
 
 /**
@@ -121,5 +109,7 @@ void Player_Place(const int playerIndex, int *players, IceFloe *floe,
     floe->occupantId = playerIndex;
     players[playerIndex] += floe->fishCount;
 
-    printf(MSG_AFTER_POSITION_UPDATE, x, y, floe->fishCount, players[playerIndex]);
+    printf("Current Player placed his penguin on (%d,%d) and obtained %d fish. "
+           "Now has %d fish.\n",
+           x, y, floe->fishCount, players[playerIndex]);
 }
