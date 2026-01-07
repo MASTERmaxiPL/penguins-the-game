@@ -56,12 +56,12 @@ InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
         }
 
         if (blocked_counter == gm->numOfPlayers) {
-            printf("\nNo players have any moves left. Game ends!\n");
-            availableMoves = false;
+            printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
-    } while (availableMoves);
-
+        (*playerIndex)++;
+    } while (1);
+    return INPUT_VALID;
 }
 
 /**
