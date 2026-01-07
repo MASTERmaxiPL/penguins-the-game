@@ -207,7 +207,7 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     if (playerId == -1) return false;
 
     if (playerId != gm->currentPlayerIndex) return false;
-    
+
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
 
