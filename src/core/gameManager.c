@@ -23,9 +23,9 @@
 
 #define minPlayerCount 2
 #define maxPlayerCount 4
-#define minWidth 2
+#define minWidth 8
 #define maxWidth 30
-#define minHeight 2
+#define minHeight 8
 #define maxHeight 30
 
 #define newGameOption 1
