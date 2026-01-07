@@ -1,8 +1,8 @@
 #ifndef PLACEMENT_PHASE_H
 #define PLACEMENT_PHASE_H
 
-#include "../core/gameBoard.h"
-#include "../core/gameManager.h"
+#include "gameBoard.h"
+#include "gameManager.h"
 
 /**
  * @file placementPhase.h
@@ -19,10 +19,8 @@
  * round until they have placed the required number.
  *
  * @param gm Pointer to the GameManager controlling the game.
- * @param isLoadedGame Indicates if the game was loaded from a saved state.
- * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus PlacementPhase_Run(GameManager *gm, bool isLoadedGame);
+void PlacementPhase_Run(GameManager *gm);
 
 /**
  * @brief Place a penguin on the selected floe and award fish to the player.
@@ -50,8 +48,8 @@ void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y);
  *  - Must be unoccupied.
  *
  * @param gm Pointer to the GameManager.
- * @return InputStatus indicating success or failure of initialization.
+ * @param currentPlayerIndex Index of the player whose turn it is.
  */
-InputStatus Player_Placement_Turn(GameManager *gm);
+void Player_Placement_Turn(GameManager *gm, int currentPlayerIndex);
 
 #endif

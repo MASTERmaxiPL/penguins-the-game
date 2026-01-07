@@ -21,29 +21,6 @@ project(penguins_the_game C)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
-    set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "Minimum CMake policy version for fetched projects" FORCE)
-endif()
-
-include(FetchContent)
-
-# Include external libraries( as static libs)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
-
-FetchContent_Declare(
-        cJSON
-        GIT_REPOSITORY  https://github.com/DaveGamble/cJSON.git
-        GIT_TAG         master
-)
-
-FetchContent_MakeAvailable(cjson)
-
-if(TARGET cjson)
-    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-        target_compile_options(cjson PRIVATE -Wno-error=float-conversion -Wno-float-conversion)
-    endif()
-endif()
-
 # /**
 #  * @brief Define the main executable and its source files.
 #  *
@@ -53,24 +30,16 @@ endif()
 #  *
 #  * @note If you add or remove source files, update this list accordingly.
 #  */
-add_executable(penguins_the_game src/main.c
-        src/core/gameManager.c
-        src/core/gameManager.h
-        src/core/boardGenerator.c
-        src/core/boardGenerator.h
-        src/phases/placementPhase.c
-        src/phases/placementPhase.h
-        src/phases/movementPhase.c
-        src/phases/movementPhase.h
-        src/core/iceFloe.h
-        src/core/gameBoard.h
-        src/utils/noise.c
-        src/input/inputHandler.c
-        src/input/inputHandler.h
-        src/io/fileHandler.c
-        src/io/fileHandler.h
-        src/io/cjsonHandler.c
-        src/io/cjsonHandler.h
+add_executable(penguins_the_game main.c
+        gameManager.c
+        gameManager.h
+        boardGenerator.c
+        boardGenerator.h
+        placementPhase.c
+        placementPhase.h
+        movementPhase.c
+        movementPhase.h
+        iceFloe.h
+        gameBoard.h
+        noise.c
 )
-
-target_link_libraries(penguins_the_game PRIVATE cjson)
