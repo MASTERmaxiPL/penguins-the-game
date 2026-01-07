@@ -23,8 +23,15 @@
  * @param isLoadedGame Indicates if the game was loaded from a saved state.
  * @return InputStatus indicating success or failure of initialization.
  */
-void MovementPhase_Run(GameManager *gm) {
-    bool availableMoves = true;
+InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
+    int *playerIndex = &gm->currentPlayerIndex;
+    int *round = &gm->currentRound;
+
+    if (!isLoadedGame) {
+        *round = 1;
+        *playerIndex = 0;
+    }
+
     int blocked_counter = 0;
 
     printf(MSG_MOVEMENT_PHASE);
@@ -49,12 +56,12 @@ void MovementPhase_Run(GameManager *gm) {
         }
 
         if (blocked_counter == gm->numOfPlayers) {
-            printf("\nNo players have any moves left. Game ends!\n");
-            availableMoves = false;
+            printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
-    } while (availableMoves);
-
+        (*playerIndex)++;
+    } while (1);
+    return INPUT_VALID;
 }
 
 /**
@@ -121,8 +128,8 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
  * The move is validated with Is_Valid_Move(). If legal, Move_Penguin() is
  * executed and the updated board is displayed.
  *
- * @param gb Pointer to GameBoard.
- * @param currentPlayerIndex Index of the active player.
+ * @param gm Pointer to GameManager.
+ * @return InputStatus indicating success or failure of initialization.
  */
 InputStatus Player_Movement_Turn(GameManager *gm) {
     InputStatus status;
@@ -149,15 +156,15 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
             continue;
         }
 
-        if (!Is_Move_In_Bounds(gb, startX, startY) ||
-            gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
-        {
-            printf("Invalid penguin.\n");
-            break;
-        }
-
-        printf("Choose destination (x y): ");
-        scanf("%d %d", &endX, &endY);
+        status = GetCoordinatesInRange(
+            MSG_CHOOSE_DESTINATION,
+            0, gb->boardWidth - 1,
+            0, gb->boardHeight - 1,
+            &endX, &endY);
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
             printf(MSG_MOVE_SUCCESSFUL);
@@ -200,7 +207,7 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     if (playerId == -1) return false;
 
     if (playerId != gm->currentPlayerIndex) return false;
-
+    
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
 
