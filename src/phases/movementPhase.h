@@ -101,9 +101,9 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY);
  *
  * Displays errors when the chosen penguin or movement is invalid.
  *
- * @param gm Pointer to GameManager.
- * @return InputStatus indicating success or failure of initialization.
+ * @param gb Pointer to GameBoard.
+ * @param currentPlayerIndex Index of the active player.
  */
-InputStatus Player_Movement_Turn(GameManager *gm);
+void Player_Movement_Turn(GameBoard *gb, int currentPlayerIndex);
 
 #endif
