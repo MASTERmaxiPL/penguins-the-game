@@ -1,8 +1,8 @@
 #ifndef MOVEMENT_PHASE_H
 #define MOVEMENT_PHASE_H
 
-#include "gameBoard.h"
-#include "gameManager.h"
+#include "../core/gameBoard.h"
+#include "../core/gameManager.h"
 
 /**
  * @file movementPhase.h
@@ -19,8 +19,10 @@
  * @brief Run the movement phase until all players become blocked.
  *
  * @param gm Pointer to the GameManager controlling the game.
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void MovementPhase_Run(GameManager *gm);
+InputStatus MovementPhase_Run(GameManager *gm, bool isLoadedGame);
 
 /**
  * @brief Determine whether a given player has at least one legal move available.
@@ -100,8 +102,8 @@ bool Move_Penguin(GameManager *gm, int startX, int startY, int endX, int endY);
  * Displays errors when the chosen penguin or movement is invalid.
  *
  * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the active player.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Movement_Turn(GameManager *gm, int currentPlayerIndex);
+InputStatus Player_Movement_Turn(GameManager *gm);
 
 #endif

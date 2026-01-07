@@ -5,9 +5,12 @@
  */
 
 #include "movementPhase.h"
-#include "boardGenerator.h"
+#include "../core/boardGenerator.h"
+#include "../common/messages.h"
 
 #include <stdio.h>
+
+#include "../input/inputHandler.h"
 
 /**
  * @brief Run the movement phase until all players are blocked.
@@ -17,36 +20,48 @@
  * consecutively blocked, the movement phase ends.
  *
  * @param gm Pointer to the GameManager (read-only).
+ * @param isLoadedGame Indicates if the game was loaded from a saved state.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void MovementPhase_Run(GameManager *gm) {
-    int blocked_counter = 0;
-    int currentPlayerIndex = -1;
-    int roundCounter = 1;
+InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
+    int *playerIndex = &gm->currentPlayerIndex;
+    int *round = &gm->currentRound;
 
-    printf("\n===== ROUND %d =====\n", roundCounter);
+    if (!isLoadedGame) {
+        *round = 1;
+        *playerIndex = 0;
+    }
+
+    int blocked_counter = 0;
+
+    printf(MSG_MOVEMENT_PHASE);
+    printf(MSG_ROUND, *round);
 
     do {
-        currentPlayerIndex++;
-
-        if (currentPlayerIndex >= gm->numOfPlayers) {
-            currentPlayerIndex = 0;
-            roundCounter++;
-            printf("\n===== ROUND %d =====\n", roundCounter);
+        if (*playerIndex >= gm->numOfPlayers) {
+            gm->currentPlayerIndex = 0;
+            (*round)++;
+            printf(MSG_ROUND, *round);
         }
 
-        if (!Check_Player_Has_Any_Moves(&gm->gb, currentPlayerIndex)) {
+        printf(MSG_PLAYER_TURN, *playerIndex + 1);
+
+        if (!Check_Player_Has_Any_Moves(&gm->gb, *playerIndex)) {
             blocked_counter++;
-            printf("Player %d has no moves available, skipping...\n", currentPlayerIndex + 1);
+            printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
         } else {
             blocked_counter = 0;
-            Player_Movement_Turn(gm, currentPlayerIndex);
+            const InputStatus status = Player_Movement_Turn(gm);
+            if (status == INPUT_EXIT) return status;
         }
 
         if (blocked_counter == gm->numOfPlayers) {
-            printf("\nNo players have any moves left. Game ends!\n");
+            printf(MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES);
             break;
         }
-    } while (true);
+        (*playerIndex)++;
+    } while (1);
+    return INPUT_VALID;
 }
 
 /**
@@ -114,40 +129,50 @@ bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int 
  * executed and the updated board is displayed.
  *
  * @param gm Pointer to GameManager.
- * @param currentPlayerIndex Index of the active player.
+ * @return InputStatus indicating success or failure of initialization.
  */
-void Player_Movement_Turn(GameManager *gm, const int currentPlayerIndex) {
-    const GameBoard *gb = &gm->gb;
+InputStatus Player_Movement_Turn(GameManager *gm) {
+    InputStatus status;
 
+    const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
 
     while(1){
-        printf("Player %d, choose penguin to move (x y): ", currentPlayerIndex + 1);
-        const int inputCount = scanf("%d %d", &startX, &startY);
+        Print_Board(gb);
+        status = GetCoordinatesInRange(
+            MSG_CHOOSE_PENGUIN,
+            0, gb->boardWidth - 1,
+            0, gb->boardHeight - 1,
+            &startX, &startY);
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
-        if (inputCount != 2) {
-            printf("Invalid input! Please enter two integers.\n");
-            while (getchar() != '\n'){}
+        IceFloe *start = &gb->floeGrid[startY][startX];
+
+        if (start->occupantId == -1 ||start->occupantId != gm->currentPlayerIndex ||!Check_Penguin_Has_Any_Moves(gb, startX, startY,gb->boardHeight, gb->boardWidth)) {
+            printf(MSG_INVALID_MOVE);
             continue;
         }
 
-        if (!Is_Move_In_Bounds(gb, startX, startY) ||
-            gb->floeGrid[startY][startX].occupantId != currentPlayerIndex)
-        {
-            printf("Invalid penguin.\n");
-            continue;
-        }
-
-        printf("Choose destination (x y): ");
-        scanf("%d %d", &endX, &endY);
+        status = GetCoordinatesInRange(
+            MSG_CHOOSE_DESTINATION,
+            0, gb->boardWidth - 1,
+            0, gb->boardHeight - 1,
+            &endX, &endY);
+        if (status == INPUT_SAVE || status == INPUT_SAVE_AND_EXIT)
+            GameManager_SaveToFile(gm, "..\\saves\\data.json");
+        if (status == INPUT_SAVE) continue;
+        if (status == INPUT_SAVE_AND_EXIT || status == INPUT_EXIT) return INPUT_EXIT;
 
         if (Move_Penguin(gm, startX, startY, endX, endY)) {
-            printf("Move successful!\n");
-            Print_Board(gb);
+            printf(MSG_MOVE_SUCCESSFUL);
             break;
         }
-        printf("Invalid move.\n");
+        printf(MSG_INVALID_MOVE);
     }
+    return status;
 }
 
 /**
@@ -180,6 +205,8 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
 
     const int playerId = gb->floeGrid[startY][startX].occupantId;
     if (playerId == -1) return false;
+
+    if (playerId != gm->currentPlayerIndex) return false;
     
     if (!Is_Valid_Move(gb, startX, startY, endX, endY))
         return false;
@@ -190,7 +217,7 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     const int collectedFish = target->fishCount;
     gm->playersScore[playerId] += collectedFish;
 
-    printf("Player %d gains %d fish! Total = %d\n", playerId + 1, collectedFish, gm->playersScore[playerId]);
+    printf(MSG_AFTER_POSITION_UPDATE, endX, endY, collectedFish, gm->playersScore[playerId]);
 
     target->occupantId = playerId;
 
