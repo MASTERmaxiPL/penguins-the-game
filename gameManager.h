@@ -2,7 +2,6 @@
 #define GAME_MANAGER_H
 
 #include "gameBoard.h"
-#include "../input/inputHandler.h"
 
 /**
  * @file gameManager.h
@@ -12,21 +11,6 @@
  * The GameManager coordinates all major systems: board generation,
  * player scores, phase execution, and overall game state.
  */
-
-/**
- * @enum GamePhase
- * @brief Represents the different phases of the game lifecycle.
- *
- * This enumeration helps track which phase the game is currently in, allowing
- * to load a game in a correct state.
- */
-typedef enum
-{
-    PHASE_INIT,
-    PHASE_PLACEMENT,
-    PHASE_MOVEMENT,
-    PHASE_CLEANUP
-} GamePhase;
 
 /**
  * @struct GameManager
@@ -41,9 +25,6 @@ typedef struct {
     int *playersScore;     /**< Dynamically allocated array storing each player's score. */
     int penguinsPerPlayer; /**< Number of penguins each player places during setup. */
     bool isRunning;        /**< Main loop control flag for GameManager_Run(). */
-    GamePhase currentPhase;  /**< Current phase of the game being executed. */
-    int currentPlayerIndex; /**< Index of the player whose turn it is currently. */
-    int currentRound;       /**< Current round number in the game. */
 } GameManager;
 
 /**
@@ -52,9 +33,8 @@ typedef struct {
  * Allocates memory for scores, initializes the board, and sets initial state.
  *
  * @param gm Pointer to the GameManager to initialize.
- * @return InputStatus indicating success or failure of initialization.
  */
-InputStatus GameManager_Init(GameManager *gm);
+void GameManager_Init(GameManager *gm);
 
 /**
  * @brief Run the full game: placement phase followed by movement phase.
@@ -62,10 +42,8 @@ InputStatus GameManager_Init(GameManager *gm);
  * Continues running until internal state sets `isRunning` to false.
  *
  * @param gm Pointer to the GameManager to run.
- * @param isLoadedGame Indicates if the game was loaded from a saved state.
- * returns InputStatus indicating success or failure of the game run.
  */
-void GameManager_Run(GameManager *gm, bool isLoadedGame);
+void GameManager_Run(GameManager *gm);
 
 /**
  * @brief Clean up all allocated resources owned by the GameManager.
@@ -75,14 +53,5 @@ void GameManager_Run(GameManager *gm, bool isLoadedGame);
  * @param gm Pointer to the GameManager to clean up.
  */
 void GameManager_Cleanup(GameManager *gm);
-
-/**
- * @brief Save the current game state to a file in JSON format.
- *
- * @param gm Pointer to the GameManager containing the game state.
- * @param path File path where the game state should be saved.
- * @return true if saving was successful, false otherwise.
- */
-bool GameManager_SaveToFile(const GameManager *gm, const char *path);
 
 #endif

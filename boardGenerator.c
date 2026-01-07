@@ -9,8 +9,7 @@
  */
 
 #include "boardGenerator.h"
-#include "../common/messages.h"
-#include "../utils/noise.h"
+#include "noise.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +60,7 @@ void GameBoard_Init(GameBoard *gb, const int boardWidth, const int boardHeight) 
     }
 
     if (!gb->floeGrid) {
-        fprintf(stderr, MSG_MEMORY_ALLOCATION_FAILED);
+        fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
