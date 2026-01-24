@@ -25,6 +25,8 @@
 #define MSG_ENTER_NUMBER_OF_PLAYERS "Enter number of players (%d-%d):"
 #define MSG_ENTER_NUMBERS_OF_PENGUINS "Enter number of penguins per player (%d-%d):"
 
+#define MSG_ENTER_PLAYER_TYPE "Is Player %d human (%d) or bot (%d):"
+
 // New/Load Game Messages
 #define MSG_NEW_GAME "Starting a new game...\n"
 #define MSG_LOAD_GAME "Loading a saved game...\n"

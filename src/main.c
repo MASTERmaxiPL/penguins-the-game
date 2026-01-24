@@ -44,12 +44,6 @@ int main() {
 
         if (status == INPUT_VALID || status == INPUT_LOADED)
         {
-            // Ask user how many bots and build bot flags
-            int botCount = 0;
-            if (AskNumberOfBots(game.numOfPlayers, &botCount) == INPUT_VALID) {
-                BuildPlayersBotFlags(game.numOfPlayers, botCount, game.isBotPlayers);
-            }
-
             // Seed RNG for bot decisions
             srand((unsigned int)time(NULL));
 
