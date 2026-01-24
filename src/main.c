@@ -13,6 +13,9 @@
 #include "common/messages.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "input/inputHandler.h"
 
 /**
  * @brief Program entry point.
@@ -41,6 +44,15 @@ int main() {
 
         if (status == INPUT_VALID || status == INPUT_LOADED)
         {
+            // Ask user how many bots and build bot flags
+            int botCount = 0;
+            if (AskNumberOfBots(game.numOfPlayers, &botCount) == INPUT_VALID) {
+                BuildPlayersBotFlags(game.numOfPlayers, botCount, game.isBotPlayers);
+            }
+
+            // Seed RNG for bot decisions
+            srand((unsigned int)time(NULL));
+
             if (status == INPUT_LOADED)
             {
                 printf(MSG_LOADED_GAME);

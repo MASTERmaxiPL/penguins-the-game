@@ -42,6 +42,7 @@
 #define MSG_PLAYER_TURN "Player %d's turn.\n"
 #define MSG_PLAYER_POINTS "Player %d has %d fish.\n"
 #define MSG_AFTER_POSITION_UPDATE "Current Player placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
+#define MSG_AFTER_POSITION_UPDATE_BOT "Current Player (bot) placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
 
 // Placement Phase Messages
 #define MSG_PLACEMENT_PHASE "Placement Phase\n"
@@ -63,7 +64,8 @@
 
 // Game End Messages
 #define MSG_FINAL_SCORES "\n ==================\n \n===== FINAL SCORES =====\n \n ==================\n"
-#define MSG_WINNER "Player %d wins with %d fish! Congratulations!\n ============================\n\n"
+#define MSG_WINNER "Player %d wins with %d fish! Congratulations!\n ==================\n\n"
+#define MSG_WINNER_BOT "Player %d (bot) wins with %d fish! Congratulations!\n ==================\n\n"
 
 #define MSG_GAME_FINISHED "Game finished, cleaning...\n"
 #define MSG_GAME_CLEANED "Game cleaned!\n"

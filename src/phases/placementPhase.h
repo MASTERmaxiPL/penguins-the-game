@@ -37,8 +37,9 @@ InputStatus PlacementPhase_Run(GameManager *gm, bool isLoadedGame);
  * @param floe Pointer to the target IceFloe.
  * @param x X-coordinate of the placement.
  * @param y Y-coordinate of the placement.
+ * @param gm Pointer to the GameManager (used to check bot flags).
  */
-void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y);
+void Player_Place(int playerIndex, int *players, IceFloe *floe, int x, int y, const GameManager *gm);
 
 /**
  * @brief Handle interaction for a single player's placement turn.

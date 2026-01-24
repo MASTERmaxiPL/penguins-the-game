@@ -9,6 +9,7 @@
 #include "../common/messages.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../input/inputHandler.h"
 
@@ -104,16 +105,16 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
 bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth)
 {
     if (posX != 0)
-        if (gb->floeGrid[posY][posX-1].occupantId ==-1 && gb->floeGrid[posY][posX-1].isFloating)
+        if (gb->floeGrid[posY][posX-1].occupantId == -1 && gb->floeGrid[posY][posX-1].isFloating)
             return true;
     if (posY != 0)
-        if (gb->floeGrid[posY-1][posX].occupantId ==-1 && gb->floeGrid[posY-1][posX].isFloating)
+        if (gb->floeGrid[posY-1][posX].occupantId == -1 && gb->floeGrid[posY-1][posX].isFloating)
             return true;
     if (posX != boardWidth-1)
-        if (gb->floeGrid[posX+1][posY].occupantId ==-1 && gb->floeGrid[posX+1][posY].isFloating)
+        if (gb->floeGrid[posY][posX+1].occupantId == -1 && gb->floeGrid[posY][posX+1].isFloating)
             return true;
     if (posY != boardHeight-1)
-        if (gb->floeGrid[posX][posY+1].occupantId ==-1 && gb->floeGrid[posX][posY+1].isFloating)
+        if (gb->floeGrid[posY+1][posX].occupantId == -1 && gb->floeGrid[posY+1][posX].isFloating)
             return true;
     return false;
 }
@@ -136,6 +137,100 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
 
     const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
+
+    // If current player is a bot, perform automated movement
+    if (gm->isBotPlayers && gm->isBotPlayers[gm->currentPlayerIndex]) {
+        // collect all penguins belonging to the bot
+        typedef struct { int x; int y; } Pos;
+        Pos *penguins = malloc(sizeof(Pos) * gb->boardHeight * gb->boardWidth);
+        int pengCount = 0;
+        for (int i = 0; i < gb->boardHeight; ++i) {
+            for (int j = 0; j < gb->boardWidth; ++j) {
+                if (gb->floeGrid[i][j].occupantId == gm->currentPlayerIndex) {
+                    penguins[pengCount].x = j;
+                    penguins[pengCount].y = i;
+                    pengCount++;
+                }
+            }
+        }
+
+        if (pengCount == 0) {
+            free(penguins);
+            return INPUT_VALID; // nothing to move
+        }
+
+        // try random penguins until one has at least one legal move
+        int chosenPengIdx = -1;
+        Pos chosenPeng;
+        Pos *destinations = malloc(sizeof(Pos) * gb->boardHeight * gb->boardWidth);
+        int destCount = 0;
+
+        for (int attempt = 0; attempt < pengCount; ++attempt) {
+            int idx = rand() % pengCount;
+            int sx = penguins[idx].x;
+            int sy = penguins[idx].y;
+
+            // gather reachable destinations for this penguin
+            destCount = 0;
+            for (int i = 0; i < gb->boardHeight; ++i) {
+                for (int j = 0; j < gb->boardWidth; ++j) {
+                    if (Is_Valid_Move(gb, sx, sy, j, i)) {
+                        destinations[destCount].x = j;
+                        destinations[destCount].y = i;
+                        destCount++;
+                    }
+                }
+            }
+
+            if (destCount > 0) {
+                chosenPengIdx = idx;
+                chosenPeng = penguins[idx];
+                break;
+            }
+        }
+
+        if (chosenPengIdx == -1) {
+            // no penguin can move
+            free(penguins);
+            free(destinations);
+            return INPUT_VALID;
+        }
+
+        // pick destination with max fishCount (break ties randomly)
+        int bestVal = -1;
+        int bestCount = 0;
+        for (int d = 0; d < destCount; ++d) {
+            int tx = destinations[d].x;
+            int ty = destinations[d].y;
+            int val = gb->floeGrid[ty][tx].fishCount;
+            if (val > bestVal) {
+                bestVal = val;
+                bestCount = 1;
+                destinations[0] = destinations[d];
+            } else if (val == bestVal) {
+                destinations[bestCount] = destinations[d];
+                bestCount++;
+            }
+        }
+
+        int pick = rand() % bestCount;
+        endX = destinations[pick].x;
+        endY = destinations[pick].y;
+        startX = chosenPeng.x;
+        startY = chosenPeng.y;
+
+        free(penguins);
+        free(destinations);
+
+        if (Move_Penguin(gm, startX, startY, endX, endY)) {
+            printf(MSG_MOVE_SUCCESSFUL);
+        } else {
+            // Shouldn't usually happen; treat as no-op
+            printf(MSG_INVALID_MOVE);
+        }
+
+        return INPUT_VALID;
+    }
 
     while(1){
         Print_Board(gb);

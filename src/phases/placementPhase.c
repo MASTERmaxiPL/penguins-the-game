@@ -13,6 +13,7 @@
 #include "../common/messages.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Run the full placement phase of the game.
@@ -77,6 +78,40 @@ InputStatus Player_Placement_Turn(GameManager *gm)
 {
     int x, y;
 
+    // If the current player is a bot, perform automated placement: choose a random
+    // available floe with fishCount == 1.
+    if (gm->isBotPlayers && gm->isBotPlayers[gm->currentPlayerIndex]) {
+        // collect candidates
+        typedef struct { int x; int y; } Pos;
+        Pos *candidates = malloc(sizeof(Pos) * gm->gb.placeableFloeCount);
+        int candCount = 0;
+        for (int i = 0; i < gm->gb.boardHeight; ++i) {
+            for (int j = 0; j < gm->gb.boardWidth; ++j) {
+                IceFloe *floe = &gm->gb.floeGrid[i][j];
+                if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
+                    candidates[candCount].x = j;
+                    candidates[candCount].y = i;
+                    candCount++;
+                }
+            }
+        }
+
+        if (candCount == 0) {
+            // no valid place — behave like skipping (shouldn't usually happen)
+            free(candidates);
+            return INPUT_VALID;
+        }
+
+        int pick = rand() % candCount;
+        x = candidates[pick].x;
+        y = candidates[pick].y;
+        free(candidates);
+
+        IceFloe *floe = &gm->gb.floeGrid[y][x];
+        Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm);
+        return INPUT_VALID;
+    }
+
     while (1)
     {
         const InputStatus status = GetCoordinatesInRange(MSG_ENTER_COORDINATES,
@@ -92,7 +127,7 @@ InputStatus Player_Placement_Turn(GameManager *gm)
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
         if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
-            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y);
+            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm);
             break;
         }
 
@@ -116,10 +151,14 @@ InputStatus Player_Placement_Turn(GameManager *gm)
  * @param y Y coordinate of the placement.
  */
 void Player_Place(const int playerIndex, int *players, IceFloe *floe,
-                  const int x, const int y) {
+                  const int x, const int y, const GameManager *gm) {
 
     floe->occupantId = playerIndex;
     players[playerIndex] += floe->fishCount;
 
-    printf(MSG_AFTER_POSITION_UPDATE, x, y, floe->fishCount, players[playerIndex]);
+    if (gm->isBotPlayers && gm->isBotPlayers[playerIndex]) {
+        printf(MSG_AFTER_POSITION_UPDATE_BOT, x, y, floe->fishCount, players[playerIndex]);
+    } else {
+        printf(MSG_AFTER_POSITION_UPDATE, x, y, floe->fishCount, players[playerIndex]);
+    }
 }
