@@ -298,11 +298,7 @@ static void Print_Final_Scores(const GameManager *gm) {
     }
 
     if (gm->isBotPlayers && gm->isBotPlayers[best]) {
-        // If winner is a bot, print that information alongside the player number
         printf(MSG_WINNER_BOT, best + 1, gm->playersScore[best]);
-        //char winnerMsg[256];
-        //snprintf(winnerMsg, sizeof(winnerMsg), "Player %d (bot) wins with %d fish! Congratulations!\n ============================\n\n", best + 1, gm->playersScore[best]);
-        //printf("%s", winnerMsg);
     } else {
         printf(MSG_WINNER, best + 1, gm->playersScore[best]);
     }
