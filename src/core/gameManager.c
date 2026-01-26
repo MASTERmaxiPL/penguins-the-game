@@ -287,7 +287,12 @@ static void Print_Final_Scores(const GameManager *gm) {
     printf(MSG_FINAL_SCORES);
 
     for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        if (gm->isBotPlayers && gm->isBotPlayers[i]) {
+            printf(MSG_PLAYER_POINTS_BOT, i + 1, gm->playersScore[i]);
+        } else {
+            printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        }
+        //printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
     }
 
     int best = 0;
