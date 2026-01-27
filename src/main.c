@@ -13,6 +13,9 @@
 #include "common/messages.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "input/inputHandler.h"
 
 /**
  * @brief Program entry point.
@@ -41,6 +44,8 @@ int main() {
 
         if (status == INPUT_VALID || status == INPUT_LOADED)
         {
+            srand((unsigned int)time(nullptr) ^ (unsigned int)clock());
+
             if (status == INPUT_LOADED)
             {
                 printf(MSG_LOADED_GAME);

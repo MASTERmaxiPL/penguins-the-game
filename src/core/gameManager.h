@@ -3,6 +3,7 @@
 
 #include "gameBoard.h"
 #include "../input/inputHandler.h"
+#include <stdbool.h>
 
 /**
  * @file gameManager.h
@@ -40,6 +41,7 @@ typedef struct {
     int numOfPlayers;      /**< Number of players participating in the game. */
     int *playersScore;     /**< Dynamically allocated array storing each player's score. */
     int penguinsPerPlayer; /**< Number of penguins each player places during setup. */
+    bool *isBotPlayers;    /**< Dynamically allocated array: true if player at index is a bot. */
     bool isRunning;        /**< Main loop control flag for GameManager_Run(). */
     GamePhase currentPhase;  /**< Current phase of the game being executed. */
     int currentPlayerIndex; /**< Index of the player whose turn it is currently. */

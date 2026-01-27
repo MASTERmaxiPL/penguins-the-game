@@ -20,6 +20,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define minPlayerCount 2
 #define maxPlayerCount 4
@@ -33,6 +34,9 @@
 
 #define tryAgainOption 1
 #define changeSettingsOption 2
+
+#define humanPlayerOption 1
+#define botPlayerOption 0
 
 static InputStatus Get_Game_Settings(GameManager *gm, int *outWidth, int *outHeight);
 static InputStatus Get_Number_Of_Penguins_Per_Player(GameManager *gm);
@@ -61,8 +65,12 @@ InputStatus GameManager_Init(GameManager *gm) {
         if (status == INPUT_EXIT) return status;
 
         if (choice == loadGameOption) {
-            GameManager_LoadFromFile(gm, "..\\saves\\data.json");
-            return INPUT_LOADED;
+            if (GameManager_LoadFromFile(gm, "..\\saves\\data.json")) {
+                return INPUT_LOADED;
+            } else {
+                printf("Failed to load saved game. Returning to menu.\n");
+                continue;
+            }
         }
 
         if (choice == newGameOption) {
@@ -71,6 +79,25 @@ InputStatus GameManager_Init(GameManager *gm) {
             int w, h;
             status = Get_Game_Settings(gm, &w, &h);
             if (status != INPUT_VALID) return status;
+
+            gm->isBotPlayers = calloc(gm->numOfPlayers, sizeof(bool));
+            if (!gm->isBotPlayers) {
+                fprintf(stderr, MSG_MEMORY_ALLOCATION_FAILED);
+                return INPUT_EXIT;
+            }
+
+            for (int i = 0; i < gm->numOfPlayers; ++i) {
+                char prompt[TEXT_BUFFER_SIZE];
+                int choiceBot = 1; // default human
+                snprintf(prompt, sizeof(prompt),MSG_ENTER_PLAYER_TYPE, i + 1, humanPlayerOption, botPlayerOption);
+                status = GetIntegerInRange(prompt, botPlayerOption, humanPlayerOption, &choiceBot);
+                if (status == INPUT_EXIT) {
+                    free(gm->isBotPlayers);
+                    gm->isBotPlayers = NULL;
+                    return INPUT_EXIT;
+                }
+                gm->isBotPlayers[i] = choiceBot ? false : true;
+            }
 
             bool setup_complete = false;
             while (!setup_complete)
@@ -95,9 +122,17 @@ InputStatus GameManager_Init(GameManager *gm) {
                 }
 
                 gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
-                if (Get_Number_Of_Penguins_Per_Player(gm) != INPUT_VALID) {
+                if (!gm->playersScore) {
                     GameBoard_Cleanup(&gm->gb);
+                    free(gm->isBotPlayers);
+                    gm->isBotPlayers = NULL;
+                    fprintf(stderr, MSG_MEMORY_ALLOCATION_FAILED);
+                    return INPUT_EXIT;
+                }
+
+                if (Get_Number_Of_Penguins_Per_Player(gm) != INPUT_VALID) {
                     free(gm->playersScore);
+                    gm->playersScore = NULL;
                     break;
                 }
 
@@ -234,6 +269,8 @@ void GameManager_Cleanup(GameManager *gm) {
     GameBoard_Cleanup(&gm->gb);
     free(gm->playersScore);
     gm->playersScore = NULL;
+    free(gm->isBotPlayers);
+    gm->isBotPlayers = NULL;
 
     printf(MSG_GAME_CLEANED);
 }
@@ -247,7 +284,11 @@ static void Print_Final_Scores(const GameManager *gm) {
     printf(MSG_FINAL_SCORES);
 
     for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        if (gm->isBotPlayers && gm->isBotPlayers[i]) {
+            printf(MSG_PLAYER_POINTS_BOT, i + 1, gm->playersScore[i]);
+        } else {
+            printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        }
     }
 
     int best = 0;
@@ -257,7 +298,11 @@ static void Print_Final_Scores(const GameManager *gm) {
         }
     }
 
-    printf(MSG_WINNER, best + 1, gm->playersScore[best]);
+    if (gm->isBotPlayers && gm->isBotPlayers[best]) {
+        printf(MSG_WINNER_BOT, best + 1, gm->playersScore[best]);
+    } else {
+        printf(MSG_WINNER, best + 1, gm->playersScore[best]);
+    }
 }
 
 /**
@@ -289,7 +334,7 @@ static bool GameManager_LoadFromFile(GameManager *gm, const char *path) {
     if (!gm || !path) return false;
     cJSON *json = LoadJsonFromFile(path);
     if (!json) return false;
-    const int res = CJSON_LoadGameManagerFromJson(gm, json);
+    const bool res = CJSON_LoadGameManagerFromJson(gm, json);
     cJSON_Delete(json);
-    return res == 0;
+    return res;
 }
