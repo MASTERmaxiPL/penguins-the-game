@@ -54,7 +54,6 @@ InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
             } else {
                 printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
             }
-            //printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
         } else {
             blocked_counter = 0;
             const InputStatus status = Player_Movement_Turn(gm);
@@ -143,7 +142,6 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
     const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
 
-    // If current player is a bot, perform automated movement
     if (gm->isBotPlayers && gm->isBotPlayers[gm->currentPlayerIndex]) {
         // collect all penguins belonging to the bot
         typedef struct { int x; int y; } Pos;
@@ -161,25 +159,24 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
 
         if (pengCount == 0) {
             free(penguins);
-            return INPUT_VALID; // nothing to move
+            return INPUT_VALID;
         }
 
         // Create an indices array and shuffle it so we test penguins in random order
         int *indices = malloc(sizeof(int) * pengCount);
         for (int i = 0; i < pengCount; ++i) indices[i] = i;
         for (int i = pengCount - 1; i > 0; --i) {
-            int j = rand() % (i + 1);
-            int tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+            const int j = rand() % (i + 1);
+            const int tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
         }
 
-        // Prepare destinations buffer once
         Pos *destinations = malloc(sizeof(Pos) * gb->boardHeight * gb->boardWidth);
 
         bool moved = false;
         for (int k = 0; k < pengCount && !moved; ++k) {
-            int idx = indices[k];
-            int sx = penguins[idx].x;
-            int sy = penguins[idx].y;
+            const int idx = indices[k];
+            const int sx = penguins[idx].x;
+            const int sy = penguins[idx].y;
 
             // gather reachable destinations for this penguin
             int destCount = 0;
@@ -194,18 +191,16 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
             }
 
             if (destCount == 0) {
-                // this penguin can't move, try next one
                 continue;
             }
 
             // pick destination with max fishCount (break ties randomly)
             int bestVal = -1;
             int bestCount = 0;
-            // temporarily store tied best destinations starting at destinations[0]
             for (int d = 0; d < destCount; ++d) {
-                int tx = destinations[d].x;
-                int ty = destinations[d].y;
-                int val = gb->floeGrid[ty][tx].fishCount;
+                const int tx = destinations[d].x;
+                const int ty = destinations[d].y;
+                const int val = gb->floeGrid[ty][tx].fishCount;
                 if (val > bestVal) {
                     bestVal = val;
                     bestCount = 1;
@@ -216,13 +211,12 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
                 }
             }
 
-            int pick = rand() % bestCount;
+            const int pick = rand() % bestCount;
             endX = destinations[pick].x;
             endY = destinations[pick].y;
             startX = sx;
             startY = sy;
 
-            // perform move
             if (Move_Penguin(gm, startX, startY, endX, endY)) {
                 printf(MSG_MOVE_SUCCESSFUL);
             } else {
@@ -230,14 +224,12 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
             }
 
             moved = true;
-            break;
         }
 
         free(penguins);
         free(indices);
         free(destinations);
 
-        // If no penguin could move, just return (will be handled by blocked logic)
         return INPUT_VALID;
     }
 
@@ -326,8 +318,6 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     } else {
         printf(MSG_AFTER_MOVE_UPDATE, startX, startY, endX, endY, collectedFish, gm->playersScore[playerId]);
     }
-
-    //printf(MSG_AFTER_POSITION_UPDATE, endX, endY, collectedFish, gm->playersScore[playerId]);
 
     target->occupantId = playerId;
 
