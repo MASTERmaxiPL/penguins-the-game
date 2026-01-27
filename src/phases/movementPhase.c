@@ -219,6 +219,7 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
 
             if (Move_Penguin(gm, startX, startY, endX, endY)) {
                 printf(MSG_MOVE_SUCCESSFUL);
+                Print_Board(gb);
             } else {
                 printf(MSG_INVALID_MOVE);
             }
