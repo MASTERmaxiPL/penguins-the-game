@@ -296,7 +296,6 @@ static GameManager create_gm_for_placement(void) {
     gm.currentPlayerIndex = 0;
     gm.playersScore = calloc(2, sizeof(int));
     gm.isBotPlayers = calloc(2, sizeof(bool));
-
     gm.gb.boardWidth = 2;
     gm.gb.boardHeight = 2;
     gm.gb.floeGrid = calloc(2, sizeof(IceFloe*));
@@ -325,7 +324,8 @@ void test_Player_Place_success(void) {
     GameManager gm = create_gm_for_placement();
 
     IceFloe *floe = &gm.gb.floeGrid[0][0];
-    Player_Place(0, gm.playersScore, floe, 0, 0, &gm);
+
+    Player_Place(0, gm.playersScore, floe, 0, 0, &gm->isBotPlayers);
 
     TEST_ASSERT_EQUAL(0, floe->occupantId);
     TEST_ASSERT_EQUAL(1, gm.playersScore[0]);
@@ -336,7 +336,7 @@ void test_Player_Place_success(void) {
 void test_Player_Place_does_not_modify_other_tiles(void) {
     GameManager gm = create_gm_for_placement();
 
-    Player_Place(0, gm.playersScore, &gm.gb.floeGrid[1][1], 1, 1, &gm);
+    Player_Place(0, gm.playersScore, &gm.gb.floeGrid[1][1], 1, 1, &gm->isBotPlayers);
 
     TEST_ASSERT_EQUAL(0, gm.gb.floeGrid[1][1].occupantId);
     TEST_ASSERT_EQUAL(-1, gm.gb.floeGrid[0][0].occupantId);
