@@ -121,8 +121,6 @@ InputStatus GameManager_Init(GameManager *gm) {
                     }
                 }
 
-                /* playersScore must be allocated here; isBotPlayers was already allocated above
-                   and contains user's human/bot choices — do not reallocate it. */
                 gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
                 if (!gm->playersScore) {
                     GameBoard_Cleanup(&gm->gb);
@@ -133,7 +131,6 @@ InputStatus GameManager_Init(GameManager *gm) {
                 }
 
                 if (Get_Number_Of_Penguins_Per_Player(gm) != INPUT_VALID) {
-                    /* keep isBotPlayers intact (user may retry), free playersScore allocated here */
                     free(gm->playersScore);
                     gm->playersScore = NULL;
                     break;
@@ -292,7 +289,6 @@ static void Print_Final_Scores(const GameManager *gm) {
         } else {
             printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
         }
-        //printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
     }
 
     int best = 0;

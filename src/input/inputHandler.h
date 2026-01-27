@@ -34,7 +34,7 @@ typedef enum {
  * @param out_value Pointer to store the valid integer input.
  * @return INPUT_VALID if a valid input is received, INPUT_EXIT if the user opts to exit.
  */
-InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, int* out_value);
+InputStatus GetIntegerInRange(const char* prompt, int min, int max, int* out_value);
 
 /**
  * @brief Prompts the user for coordinate input within specified ranges.
@@ -53,32 +53,8 @@ InputStatus GetIntegerInRange(const char* prompt, const int min, const int max, 
  */
 InputStatus GetCoordinatesInRange(
     const char* prompt,
-    const int minX, const int maxX,
-    const int minY, const int maxY,
+    int minX, int maxX,
+    int minY, int maxY,
     int* out_valueX, int* out_valueY);
-
-/* New helpers for bot setup */
-
-/**
- * @brief Ask user how many bots will participate (0..numPlayers).
- * @param numPlayers Maximum number of players.
- * @param outBots Pointer to store the number of bots chosen.
- * @return INPUT_VALID or INPUT_EXIT.
- */
-InputStatus AskNumberOfBots(int numPlayers, int *outBots);
-
-/**
- * @brief Populate an array of bool flags indicating which player indices are bots.
- *
- * For simplicity this function will prompt the user to enter the ordering as a
- * sequence of indices like "1 2 3" where indices that should be bots are
- * marked with a 'b' suffix (e.g., "1 2b 3"). If the user enters nothing special,
- * the first 'botCount' players will be marked as bots.
- *
- * @param numPlayers Total number of players.
- * @param botCount Number of bots.
- * @param outBotFlags Preallocated array[numPlayers] to set true for bot indices.
- */
-void BuildPlayersBotFlags(int numPlayers, int botCount, bool *outBotFlags);
 
 #endif
