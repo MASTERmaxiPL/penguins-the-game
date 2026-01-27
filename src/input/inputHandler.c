@@ -11,7 +11,7 @@
 #include "inputHandler.h"
 #include "../common/messages.h"
 
-#define INPUT_BUFFER_SIZE 200
+#define INPUT_BUFFER_SIZE 20
 
 /**
  * @brief Clears the input buffer to avoid overflow issues.
