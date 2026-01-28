@@ -133,7 +133,6 @@ InputStatus GameManager_Init(GameManager *gm) {
                 }
 
                 if (Get_Number_Of_Penguins_Per_Player(gm) != INPUT_VALID) {
-                    /* keep isBotPlayers intact (user may retry), free playersScore allocated here */
                     free(gm->playersScore);
                     gm->playersScore = NULL;
                     break;
@@ -287,7 +286,11 @@ static void Print_Final_Scores(const GameManager *gm) {
     printf(MSG_FINAL_SCORES);
 
     for (int i = 0; i < gm->numOfPlayers; i++) {
-        printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        if (gm->isBotPlayers && gm->isBotPlayers[i]) {
+            printf(MSG_PLAYER_POINTS_BOT, i + 1, gm->playersScore[i]);
+        } else {
+            printf(MSG_PLAYER_POINTS, i + 1, gm->playersScore[i]);
+        }
     }
 
     int best = 0;
@@ -298,11 +301,7 @@ static void Print_Final_Scores(const GameManager *gm) {
     }
 
     if (gm->isBotPlayers && gm->isBotPlayers[best]) {
-        // If winner is a bot, print that information alongside the player number
         printf(MSG_WINNER_BOT, best + 1, gm->playersScore[best]);
-        //char winnerMsg[256];
-        //snprintf(winnerMsg, sizeof(winnerMsg), "Player %d (bot) wins with %d fish! Congratulations!\n ============================\n\n", best + 1, gm->playersScore[best]);
-        //printf("%s", winnerMsg);
     } else {
         printf(MSG_WINNER, best + 1, gm->playersScore[best]);
     }

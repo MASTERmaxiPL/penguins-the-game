@@ -43,8 +43,11 @@
 #define MSG_ROUND "\n===== ROUND %d =====\n"
 #define MSG_PLAYER_TURN "Player %d's turn.\n"
 #define MSG_PLAYER_POINTS "Player %d has %d fish.\n"
+#define MSG_PLAYER_POINTS_BOT "Player %d (bot) has %d fish.\n"
 #define MSG_AFTER_POSITION_UPDATE "Current Player placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
 #define MSG_AFTER_POSITION_UPDATE_BOT "Current Player (bot) placed his penguin on (%d,%d) and obtained %d fish. Now has %d fish.\n"
+#define MSG_AFTER_MOVE_UPDATE "Current Player moved his penguin from (%d,%d) to (%d,%d) and obtained %d fish. Now has %d fish.\n"
+#define MSG_AFTER_MOVE_UPDATE_BOT "Current Player (bot) moved his penguin from (%d,%d) to (%d,%d) and obtained %d fish. Now has %d fish.\n"
 
 // Placement Phase Messages
 #define MSG_PLACEMENT_PHASE "Placement Phase\n"
@@ -62,6 +65,7 @@
 #define MSG_INVALID_MOVE "Invalid move. Try again.\n"
 #define MSG_INVALID_PENGUIN "Invalid penguin.\n"
 #define MSG_PLAYER_NO_AVAILABLE_MOVES "Player %d has no available moves, skipping...\n"
+#define MSG_PLAYER_NO_AVAILABLE_MOVES_BOT "Player %d (bot) has no available moves, skipping...\n"
 #define MSG_ALL_PLAYERS_NO_AVAILABLE_MOVES "\nNo players have any moves left. Game ends!\n"
 
 // Game End Messages

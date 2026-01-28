@@ -78,10 +78,7 @@ InputStatus Player_Placement_Turn(GameManager *gm)
 {
     int x, y;
 
-    // If the current player is a bot, perform automated placement: choose a random
-    // available floe with fishCount == 1.
     if (gm->isBotPlayers && gm->isBotPlayers[gm->currentPlayerIndex]) {
-        // collect candidates
         typedef struct { int x; int y; } Pos;
         Pos *candidates = malloc(sizeof(Pos) * gm->gb.placeableFloeCount);
         int candCount = 0;
@@ -97,18 +94,17 @@ InputStatus Player_Placement_Turn(GameManager *gm)
         }
 
         if (candCount == 0) {
-            // no valid place — behave like skipping (shouldn't usually happen)
             free(candidates);
             return INPUT_VALID;
         }
 
-        int pick = rand() % candCount;
+        const int pick = rand() % candCount;
         x = candidates[pick].x;
         y = candidates[pick].y;
         free(candidates);
 
         IceFloe *floe = &gm->gb.floeGrid[y][x];
-        Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm);
+        Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm->isBotPlayers);
         return INPUT_VALID;
     }
 
@@ -127,7 +123,7 @@ InputStatus Player_Placement_Turn(GameManager *gm)
         IceFloe *floe = &gm->gb.floeGrid[y][x];
 
         if (floe->isFloating && floe->occupantId == -1 && floe->fishCount == 1) {
-            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm);
+            Player_Place(gm->currentPlayerIndex, gm->playersScore, floe, x, y, gm->isBotPlayers);
             break;
         }
 
@@ -149,14 +145,15 @@ InputStatus Player_Placement_Turn(GameManager *gm)
  * @param floe Pointer to the IceFloe being occupied.
  * @param x X coordinate of the placement.
  * @param y Y coordinate of the placement.
+ * @param isBotPlayers Pointer to array indicating which players are bots.
  */
 void Player_Place(const int playerIndex, int *players, IceFloe *floe,
-                  const int x, const int y, const GameManager *gm) {
+                  const int x, const int y, const bool *isBotPlayers) {
 
     floe->occupantId = playerIndex;
     players[playerIndex] += floe->fishCount;
 
-    if (gm->isBotPlayers && gm->isBotPlayers[playerIndex]) {
+    if (isBotPlayers && isBotPlayers[playerIndex]) {
         printf(MSG_AFTER_POSITION_UPDATE_BOT, x, y, floe->fishCount, players[playerIndex]);
     } else {
         printf(MSG_AFTER_POSITION_UPDATE, x, y, floe->fishCount, players[playerIndex]);

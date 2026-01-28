@@ -44,8 +44,7 @@ int main() {
 
         if (status == INPUT_VALID || status == INPUT_LOADED)
         {
-            // Seed RNG for bot decisions
-            srand((unsigned int)time(NULL));
+            srand((unsigned int)time(nullptr) ^ (unsigned int)clock());
 
             if (status == INPUT_LOADED)
             {
