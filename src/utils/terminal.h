@@ -37,10 +37,9 @@ void Enable_VT_Mode(void);
 
 /* Player colors (distinct and readable) */
 #define COLOR_PLAYER_1         "\x1b[91m"    /* bright red */
-#define COLOR_PLAYER_2         "\x1b[32m"    /* green */
-#define COLOR_PLAYER_3         "\x1b[38;5;104m"  /* orange (256-color) */
-#define COLOR_PLAYER_4         "\x1b[38;5;17m"   /* teal / blue-green (256-color) */
-#define COLOR_PLAYER_DEFAULT   "\x1b[37m"    /* white (fallback) */
+#define COLOR_PLAYER_2         "\x1b[38;5;154m"    /* green */
+#define COLOR_PLAYER_3         "\x1b[38;5;104m"  /* bright blue */
+#define COLOR_PLAYER_4         "\x1b[38;5;8m"   /* gray */
 
 /* Helper to map zero-based player id to color */
 static inline const char *PlayerColor(const int playerId) {
@@ -49,7 +48,7 @@ static inline const char *PlayerColor(const int playerId) {
     case 1: return COLOR_PLAYER_2;
     case 2: return COLOR_PLAYER_3;
     case 3: return COLOR_PLAYER_4;
-    default: return COLOR_PLAYER_DEFAULT;
+    default: return COLOR_ICE;
     }
 }
 
