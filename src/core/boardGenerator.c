@@ -11,6 +11,7 @@
 #include "boardGenerator.h"
 #include "../common/messages.h"
 #include "../utils/noise.h"
+#include "../utils/terminal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -142,33 +143,54 @@ void Generate_Board(GameBoard *gb) {
  * @param gb Pointer to the GameBoard to print.
  */
 void Print_Board(const GameBoard *gb) {
+    Enable_VT_Mode();
+
     printf("   ");
     for (int x = 0; x < gb->boardWidth; x++) {
-        if (x<10)
-            printf("  %d  ", x);
-        else
-            printf(" %3d ", x);
+        const char *lblColCol = (x & 1) ? COLOR_LABEL_ODD : COLOR_LABEL_EVEN;
+        if (x < 10) {
+            printf(" %s  %d  %s", lblColCol, x, COLOR_RESET);
+        } else {
+            printf(" %s %3d %s", lblColCol, x, COLOR_RESET);
+        }
     }
     printf("\n");
     for (int y = 0; y < gb->boardHeight; y++) {
-        printf("%2d ", y);
+        const char *lblRowCol = (y & 1) ? COLOR_LABEL_ODD : COLOR_LABEL_EVEN;
+        printf("%s%2d%s ", lblRowCol, y, COLOR_RESET);
         for (int x = 0; x < gb->boardWidth; x++) {
             const IceFloe *floe = &gb->floeGrid[y][x];
             if (floe->occupantId != -1) // if occupied
             {
-                printf("| P%d ", floe->occupantId + 1);
+                const char *col = PlayerColor(floe->occupantId);
+                printf("| %sP%d%s  ", col, floe->occupantId + 1, COLOR_RESET);
             }
             else if (floe->isFloating) //if not occupied, if ice floe
             {
-                printf("| %d  ", floe->fishCount);
+                const char *col = COLOR_ICE;
+                if (floe->fishCount == 1) col = COLOR_FISH_1;
+                else if (floe->fishCount == 2) col = COLOR_FISH_2;
+                else if (floe->fishCount >= 3) col = COLOR_FISH_3;
+
+                printf("| %s%2d%s  ", col, floe->fishCount, COLOR_RESET);
             }
             else // no ice floe
             {
-                printf("| X  ");
+                printf("| %sXXX%s ", COLOR_WATER, COLOR_RESET);
             }
         }
-        printf("| \n");
+        printf("|%s%2d%s \n", lblRowCol, y, COLOR_RESET);
     }
+    printf("   ");
+    for (int x = 0; x < gb->boardWidth; x++) {
+        const char *lblColCol = (x & 1) ? COLOR_LABEL_ODD : COLOR_LABEL_EVEN;
+        if (x < 10) {
+            printf(" %s  %d  %s", lblColCol, x, COLOR_RESET);
+        } else {
+            printf(" %s %3d %s", lblColCol, x, COLOR_RESET);
+        }
+    }
+    printf("\n");
 }
 
 /**
