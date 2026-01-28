@@ -121,6 +121,8 @@ InputStatus GameManager_Init(GameManager *gm) {
                     }
                 }
 
+                /* playersScore must be allocated here; isBotPlayers was already allocated above
+                   and contains user's human/bot choices — do not reallocate it. */
                 gm->playersScore = calloc(gm->numOfPlayers, sizeof(int));
                 if (!gm->playersScore) {
                     GameBoard_Cleanup(&gm->gb);
