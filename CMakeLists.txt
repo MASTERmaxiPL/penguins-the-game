@@ -71,6 +71,8 @@ add_executable(penguins_the_game src/main.c
         src/io/fileHandler.h
         src/io/cjsonHandler.c
         src/io/cjsonHandler.h
+        src/utils/terminal.c
+        src/utils/terminal.h
 )
 
 target_link_libraries(penguins_the_game PRIVATE cjson)

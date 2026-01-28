@@ -9,6 +9,7 @@
 #include "../common/messages.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../input/inputHandler.h"
 
@@ -48,7 +49,11 @@ InputStatus MovementPhase_Run(GameManager *gm, const bool isLoadedGame) {
 
         if (!Check_Player_Has_Any_Moves(&gm->gb, *playerIndex)) {
             blocked_counter++;
-            printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
+            if (gm->isBotPlayers && gm->isBotPlayers[*playerIndex]) {
+                printf(MSG_PLAYER_NO_AVAILABLE_MOVES_BOT, *playerIndex + 1);
+            } else {
+                printf(MSG_PLAYER_NO_AVAILABLE_MOVES, *playerIndex + 1);
+            }
         } else {
             blocked_counter = 0;
             const InputStatus status = Player_Movement_Turn(gm);
@@ -104,16 +109,16 @@ bool Check_Player_Has_Any_Moves(const GameBoard *gb, const int currentPlayerInde
 bool Check_Penguin_Has_Any_Moves(const GameBoard *gb, const int posX, const int posY, const int boardHeight, const int boardWidth)
 {
     if (posX != 0)
-        if (gb->floeGrid[posY][posX-1].occupantId ==-1 && gb->floeGrid[posY][posX-1].isFloating)
+        if (gb->floeGrid[posY][posX-1].occupantId == -1 && gb->floeGrid[posY][posX-1].isFloating)
             return true;
     if (posY != 0)
-        if (gb->floeGrid[posY-1][posX].occupantId ==-1 && gb->floeGrid[posY-1][posX].isFloating)
+        if (gb->floeGrid[posY-1][posX].occupantId == -1 && gb->floeGrid[posY-1][posX].isFloating)
             return true;
     if (posX != boardWidth-1)
-        if (gb->floeGrid[posX+1][posY].occupantId ==-1 && gb->floeGrid[posX+1][posY].isFloating)
+        if (gb->floeGrid[posY][posX+1].occupantId == -1 && gb->floeGrid[posY][posX+1].isFloating)
             return true;
     if (posY != boardHeight-1)
-        if (gb->floeGrid[posX][posY+1].occupantId ==-1 && gb->floeGrid[posX][posY+1].isFloating)
+        if (gb->floeGrid[posY+1][posX].occupantId == -1 && gb->floeGrid[posY+1][posX].isFloating)
             return true;
     return false;
 }
@@ -136,6 +141,98 @@ InputStatus Player_Movement_Turn(GameManager *gm) {
 
     const GameBoard *gb = &gm->gb;
     int startX, startY, endX, endY;
+
+    if (gm->isBotPlayers && gm->isBotPlayers[gm->currentPlayerIndex]) {
+        // collect all penguins belonging to the bot
+        typedef struct { int x; int y; } Pos;
+        Pos *penguins = malloc(sizeof(Pos) * gb->boardHeight * gb->boardWidth);
+        int pengCount = 0;
+        for (int i = 0; i < gb->boardHeight; ++i) {
+            for (int j = 0; j < gb->boardWidth; ++j) {
+                if (gb->floeGrid[i][j].occupantId == gm->currentPlayerIndex) {
+                    penguins[pengCount].x = j;
+                    penguins[pengCount].y = i;
+                    pengCount++;
+                }
+            }
+        }
+
+        if (pengCount == 0) {
+            free(penguins);
+            return INPUT_VALID;
+        }
+
+        // Create an indices array and shuffle it so we test penguins in random order
+        int *indices = malloc(sizeof(int) * pengCount);
+        for (int i = 0; i < pengCount; ++i) indices[i] = i;
+        for (int i = pengCount - 1; i > 0; --i) {
+            const int j = rand() % (i + 1);
+            const int tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+        }
+
+        Pos *destinations = malloc(sizeof(Pos) * gb->boardHeight * gb->boardWidth);
+
+        bool moved = false;
+        for (int k = 0; k < pengCount && !moved; ++k) {
+            const int idx = indices[k];
+            const int sx = penguins[idx].x;
+            const int sy = penguins[idx].y;
+
+            // gather reachable destinations for this penguin
+            int destCount = 0;
+            for (int i = 0; i < gb->boardHeight; ++i) {
+                for (int j = 0; j < gb->boardWidth; ++j) {
+                    if (Is_Valid_Move(gb, sx, sy, j, i)) {
+                        destinations[destCount].x = j;
+                        destinations[destCount].y = i;
+                        destCount++;
+                    }
+                }
+            }
+
+            if (destCount == 0) {
+                continue;
+            }
+
+            // pick destination with max fishCount (break ties randomly)
+            int bestVal = -1;
+            int bestCount = 0;
+            for (int d = 0; d < destCount; ++d) {
+                const int tx = destinations[d].x;
+                const int ty = destinations[d].y;
+                const int val = gb->floeGrid[ty][tx].fishCount;
+                if (val > bestVal) {
+                    bestVal = val;
+                    bestCount = 1;
+                    destinations[0] = destinations[d];
+                } else if (val == bestVal) {
+                    destinations[bestCount] = destinations[d];
+                    bestCount++;
+                }
+            }
+
+            const int pick = rand() % bestCount;
+            endX = destinations[pick].x;
+            endY = destinations[pick].y;
+            startX = sx;
+            startY = sy;
+
+            if (Move_Penguin(gm, startX, startY, endX, endY)) {
+                printf(MSG_MOVE_SUCCESSFUL);
+                Print_Board(gb);
+            } else {
+                printf(MSG_INVALID_MOVE);
+            }
+
+            moved = true;
+        }
+
+        free(penguins);
+        free(indices);
+        free(destinations);
+
+        return INPUT_VALID;
+    }
 
     while(1){
         Print_Board(gb);
@@ -217,7 +314,11 @@ bool Move_Penguin(GameManager *gm, const int startX, const int startY, const int
     const int collectedFish = target->fishCount;
     gm->playersScore[playerId] += collectedFish;
 
-    printf(MSG_AFTER_POSITION_UPDATE, endX, endY, collectedFish, gm->playersScore[playerId]);
+    if (gm->isBotPlayers && gm->isBotPlayers[playerId]) {
+        printf(MSG_AFTER_MOVE_UPDATE_BOT, startX, startY, endX, endY, collectedFish, gm->playersScore[playerId]);
+    } else {
+        printf(MSG_AFTER_MOVE_UPDATE, startX, startY, endX, endY, collectedFish, gm->playersScore[playerId]);
+    }
 
     target->occupantId = playerId;
 

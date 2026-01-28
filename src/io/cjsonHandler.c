@@ -79,6 +79,22 @@ static cJSON* create_board_object(const GameManager *gm) {
 }
 
 /**
+ * @brief Create a cJSON array representing whether each player is a bot.
+ *
+ * @param gm Pointer to the GameManager containing bot player info.
+ * @return cJSON array of booleans indicating bot players.
+ */
+static cJSON* create_isbot_array(const GameManager *gm) {
+    cJSON *arr = cJSON_CreateArray();
+    if (!arr) return NULL;
+    for (int i = 0; i < gm->numOfPlayers; ++i) {
+        const bool isBot = (gm->isBotPlayers && i < gm->numOfPlayers) ? gm->isBotPlayers[i] : false;
+        cJSON_AddItemToArray(arr, cJSON_CreateBool(isBot));
+    }
+    return arr;
+}
+
+/**
  * @brief Serialize the GameManager into a cJSON object.
  *
  * @param gm Pointer to the GameManager to serialize.
@@ -100,6 +116,9 @@ cJSON* CJSON_CreateFromGameManager(const GameManager *gm) {
     cJSON_AddStringToObject(json, "currentPhase", phaseStr);
     cJSON_AddNumberToObject(json, "currentPlayerIndex", gm->currentPlayerIndex);
     cJSON_AddNumberToObject(json, "currentRound", gm->currentRound);
+
+    cJSON *botArr = create_isbot_array(gm);
+    if (botArr) cJSON_AddItemToObject(json, "isBotPlayers", botArr);
 
     cJSON *boardObj = create_board_object(gm);
     if (boardObj) cJSON_AddItemToObject(json, "gb", boardObj);
@@ -161,6 +180,25 @@ bool CJSON_LoadGameManagerFromJson(GameManager *gm, const cJSON *json) {
 
     item = cJSON_GetObjectItemCaseSensitive(json, "currentRound");
     gm->currentRound = cJSON_IsNumber(item) ? item->valueint : 0;
+
+    item = cJSON_GetObjectItemCaseSensitive(json, "isBotPlayers");
+    if (cJSON_IsArray(item)) {
+        gm->isBotPlayers = calloc(gm->numOfPlayers, sizeof(bool));
+        if (!gm->isBotPlayers) return false;
+        int bidx = 0;
+        cJSON *botIt = NULL;
+        cJSON_ArrayForEach(botIt, item) {
+            if (bidx >= gm->numOfPlayers) break;
+            gm->isBotPlayers[bidx++] = cJSON_IsTrue(botIt) ? true : false;
+        }
+        /* in case JSON array shorter than numOfPlayers, remaining default to false (human) */
+        for (; bidx < gm->numOfPlayers; ++bidx) gm->isBotPlayers[bidx] = false;
+    } else {
+        /* default: all human */
+        gm->isBotPlayers = calloc(gm->numOfPlayers, sizeof(bool));
+        if (!gm->isBotPlayers) return false;
+        for (int i = 0; i < gm->numOfPlayers; ++i) gm->isBotPlayers[i] = false;
+    }
 
     const cJSON *gbObj = cJSON_GetObjectItemCaseSensitive(json, "gb");
     if (!cJSON_IsObject(gbObj)) return false;

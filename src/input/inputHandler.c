@@ -7,11 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "inputHandler.h"
 #include "../common/messages.h"
 
-#define INPUT_BUFFER_SIZE 20
+#define INPUT_BUFFER_SIZE 200
 
 /**
  * @brief Clears the input buffer to avoid overflow issues.
@@ -127,3 +128,23 @@ InputStatus GetCoordinatesInRange(
         return INPUT_VALID;
     }
 }
+
+/* New helpers for bot setup */
+
+InputStatus AskNumberOfBots(int numPlayers, int *outBots) {
+    char prompt[TEXT_BUFFER_SIZE];
+    snprintf(prompt, sizeof(prompt), "Enter number of bots (0-%d):", numPlayers);
+    return GetIntegerInRange(prompt, 0, numPlayers, outBots);
+}
+
+void BuildPlayersBotFlags(int numPlayers, int botCount, bool *outBotFlags) {
+    if (!outBotFlags) return;
+    for (int i = 0; i < numPlayers; ++i) outBotFlags[i] = false;
+
+    // Simple default: mark the first botCount players as bots.
+    for (int i = 0; i < botCount && i < numPlayers; ++i) {
+        outBotFlags[i] = true;
+    }
+}
+
+
